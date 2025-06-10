@@ -3,47 +3,77 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GCSE Biology Revision Hub</title>
+    <title>Combined GCSE Revision Timetable</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-        /* General Body Styling (from revision website) */
         body {
             font-family: 'Inter', sans-serif;
             background-color: #f0f4f8; /* Light blue-grey background */
             line-height: 1.6;
-            color: #4a5568; /* Default text color */
         }
-
-        /* Container for Revision Timetable */
-        .revision-container {
+        .container {
             max-width: 1200px;
             margin: 2rem auto;
             padding: 1.5rem;
             background-color: #ffffff;
-            border-radius: 1.5rem; /* More rounded corners */
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1); /* Softer shadow */
+            border-radius: 1.5rem;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+        .tab-button {
+            padding: 0.75rem 1.5rem;
+            font-weight: 600;
+            cursor: pointer;
+            border-radius: 0.75rem 0.75rem 0 0;
+            background-color: #e2e8f0;
+            color: #4a5568;
+            transition: background-color 0.3s ease, color 0.3s ease;
+            outline: none;
+            border: none;
+        }
+        .tab-button.active {
+            background-color: #ffffff;
+            color: #3182ce;
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05);
+            border-top: 2px solid #3182ce;
+        }
+        .tab-content {
+            border-top: 1px solid #e2e8f0;
+            padding-top: 1.5rem;
         }
         .day-card {
-            background-color: #f8fafc; /* Lighter background for day cards */
-            border-radius: 1rem; /* Rounded corners for day cards */
+            background-color: #f8fafc;
+            border-radius: 1rem;
             padding: 1.5rem;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05); /* Subtle shadow for cards */
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
             transition: transform 0.2s ease-in-out;
+            margin-bottom: 1.5rem; /* Space between cards */
         }
         .day-card:hover {
-            transform: translateY(-5px); /* Slight lift on hover */
+            transform: translateY(-5px);
         }
         .subject-block {
             padding: 0.75rem 1rem;
-            border-radius: 0.75rem; /* Rounded corners for subject blocks */
+            border-radius: 0.75rem;
             margin-bottom: 0.75rem;
         }
-        .subject-maths { background-color: #e0f2f7; color: #007bb5; } /* Light blue */
-        .subject-chemistry { background-color: #ffe0b2; color: #ff9800; } /* Light orange */
-        .subject-biology { background-color: #c8e6c9; color: #4caf50; } /* Light green */
-        .subject-physics { background-color: #e3f2fd; color: #2196f3; } /* Slightly darker light blue */
+        /* Subject specific colors for the main schedule */
+        .subject-maths { background-color: #e0f2f7; color: #007bb5; }
+        .subject-chemistry { background-color: #ffe0b2; color: #ff9800; }
+        .subject-biology { background-color: #c8e6c9; color: #4caf50; }
+        .subject-physics { background-color: #e3f2fd; color: #2196f3; }
+
+        /* Geography specific colors (from previous geography timetable) */
+        .subject-geography {
+            background-color: #e0f7fa; /* Light teal for geography */
+            color: #00796b; /* Dark teal text */
+            border: 1px solid #b2ebf2;
+        }
+        .geography-subject-title { /* Specific title style for geography */
+            font-weight: 700;
+            margin-bottom: 0.25rem;
+            color: #004d40;
+        }
 
         .subject-title {
             font-weight: 600;
@@ -54,1279 +84,963 @@
             padding-left: 1.25rem;
             margin-top: 0.5rem;
             font-size: 0.9rem;
-            color: #4a5568; /* Darker grey for text */
+            color: #4a5568;
         }
-        .activity-list li {
-            margin-bottom: 0.25rem;
+        /* Custom bullet for geography activities */
+        #geography-schedule .activity-list {
+            list-style: none; /* No bullets by default */
+            padding-left: 0;
         }
+        #geography-schedule .activity-list li {
+            margin-bottom: 0.35rem;
+            display: flex;
+            align-items: flex-start;
+        }
+        #geography-schedule .activity-list li::before {
+            content: '👉'; /* Custom bullet point */
+            margin-right: 0.75rem;
+            font-size: 0.9rem;
+            line-height: 1;
+            padding-top: 2px;
+        }
+        
         .cognito-link {
             display: block;
             margin-top: 0.5rem;
             font-size: 0.85rem;
-            color: #2a6fdb; /* Blue link color */
+            color: #2a6fdb;
             text-decoration: underline;
-            word-break: break-all; /* Ensure long links wraps */
+            word-break: break-all;
         }
         .cognito-link:hover {
             color: #1a56b8;
         }
-
-        /* Styles for Food Tests Infographic */
-        .infographic-container {
-            max-width: 900px; /* Adjusted for infographics */
-            margin: 2rem auto;
-            padding: 1.5rem;
-            background-color: #ffffff;
-            border-radius: 1.5rem;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-        }
-
-        .chart-container {
-            position: relative;
-            width: 100%;
-            max-width: 600px;
-            margin-left: auto;
-            margin-right: auto;
-            height: 300px;
-            max-height: 400px;
-        }
-        @media (min-width: 768px) {
-            .chart-container {
-                height: 350px;
-            }
-        }
-        .step-heading {
-            display: flex;
-            align-items: center;
-            margin-bottom: 1rem;
-        }
-        .step-number {
-            width: 36px;
-            height: 36px;
-            border-radius: 9999px;
-            background-color: #004e92;
-            color: #ffffff;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 700;
-            font-size: 1.25rem;
-            flex-shrink: 0;
-            margin-right: 1rem;
-        }
-        .step-title {
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: #004e92;
-        }
-
-        /* Styles for Enzymes in Digestion Infographic */
-        .section-separator {
-            margin-top: 2rem;
-            margin-bottom: 2rem;
-            width: 75%;
-            height: 4px;
-            background-color: #4286f4;
-            margin-left: auto;
-            margin-right: auto;
-            border-radius: 9999px;
+        .note {
+            background-color: #fff3e0;
+            border-left: 4px solid #ffb74d;
+            padding: 0.75rem 1rem;
+            border-radius: 0.5rem;
+            font-size: 0.9rem;
+            color: #e65100;
+            margin-top: 1rem;
         }
     </style>
 </head>
 <body class="p-4">
 
-    <!-- Overall Navigation/Introduction -->
-    <div class="text-center mb-12 relative pt-12">
-        <h1 class="text-5xl font-bold text-[#004e92] mb-4">Your Ultimate GCSE Biology Revision Hub</h1>
-        <p class="text-xl text-gray-600 mt-2">Access your personalized timetable and essential biology infographics all in one place!</p>
-
-        <!-- Dropdown Menu - Fixed Position -->
-        <div class="fixed top-4 right-4 md:right-8 z-50">
-            <button id="menuButton" class="bg-[#004e92] text-white px-4 py-2 rounded-lg shadow-md hover:bg-[#4286f4] transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-[#4286f4] focus:ring-opacity-75">
-                Menu
-            </button>
-            <div id="dropdownMenu" class="hidden absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 ring-1 ring-black ring-opacity-5">
-                <a href="#revision-timetable" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" data-target-section="revision-timetable">Revision Timetable</a>
-                <a href="#food-tests-infographic" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" data-target-section="food-tests-infographic">Food Tests Infographic</a>
-                <a href="#enzymes-infographic" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" data-target-section="enzymes-infographic">Enzymes Infographic</a>
-            </div>
-        </div>
-    </div>
-
-    <hr class="border-t-2 border-blue-200 my-8">
-
-    <!-- Section for Revision Timetable -->
-    <section id="revision-timetable" class="revision-container hidden">
+    <div class="container">
         <h1 class="text-4xl font-bold text-center text-gray-800 mb-8 rounded-lg p-4 bg-gradient-to-r from-blue-100 to-indigo-100 shadow-md">
             Your Comprehensive GCSE Revision Timetable
         </h1>
 
-        <p class="text-gray-600 text-center mb-10">
-            Here's your personalized revision timetable from June 5 to June 23, 2025. Each day includes 2 hours dedicated to Maths, Chemistry, Biology, and Physics. Click on the CognitoEdu links to directly access relevant subtopics for your revision.
-        </p>
-
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-
-            <!-- Thursday, June 5, 2025 -->
-            <div class="day-card">
-                <h2 class="text-2xl font-bold text-gray-800 mb-4 pb-2 border-b-2 border-blue-200">Thursday, June 5, 2025</h2>
-                
-                <div class="subject-block subject-maths">
-                    <p class="subject-title">Maths (2 hours)</p>
-                    <ul class="activity-list">
-                        <li>Adding Fractions</li>
-                        <li>Multiplying Fractions</li>
-                        <li>Dividing Fractions</li>
-                        <li>Reciprocals</li>
-                        <li>Arithmetic with Decimals</li>
-                        <li>Fractions, Decimals, Percentages</li>
-                        <li>Recurring Decimals</li>
-                        <li>Significant Figures</li>
-                        <li>Use of a Calculator</li>
-                    </ul>
-                </div>
-
-                <div class="subject-block subject-chemistry">
-                    <p class="subject-title">Chemistry (2 hours): C1 Atomic Structure and the Periodic Table - Review Knowledge Organiser</p>
-                    <p class="font-medium text-sm mt-2 mb-1 text-gray-700">CognitoEdu Subtopics:</p>
-                    <a href="https://cognitoedu.org/lessons/c2-gcse-aqa-h-t/1.1-atoms" target="_blank" class="cognito-link">1.1 - Atoms</a>
-                    <a href="https://cognitoedu.org/lessons/c2-gcse-aqa-h-t/1.2-elements-isotopes-relative-atomic-mass" target="_blank" class="cognito-link">1.2 - Elements, Isotopes & Relative Atomic Mass</a>
-                    <a href="https://cognitoedu.org/lessons/c2-gcse-aqa-h-t/1.3-compounds-molecules-mixtures" target="_blank" class="cognito-link">1.3 - Compounds, Molecules & Mixtures</a>
-                    <a href="https://cognitoedu.org/lessons/c2-gcse-aqa-h-t/1.4-balancing-chemical-equations" target="_blank" class="cognito-link">1.4 - Balancing Chemical Equations</a>
-                </div>
-
-                <div class="subject-block subject-biology">
-                    <p class="subject-title">Biology (2 hours): B1 Cell Biology - Review Knowledge Organiser</p>
-                    <p class="font-medium text-sm mt-2 mb-1 text-gray-700">CognitoEdu Subtopics:</p>
-                    <a href="https://cognitoedu.org/lessons/b2-gcse-aqa-h-t/1.1-eukaryotic-prokaryotic-cells" target="_blank" class="cognito-link">1.1 - Eukaryotic & Prokaryotic Cells</a>
-                    <a href="https://cognitoedu.org/lessons/b2-gcse-aqa-h-t/1.2-animal-plant-cells" target="_blank" class="cognito-link">1.2 - Animal & Plant Cells</a>
-                    <a href="https://cognitoedu.org/lessons/b2-gcse-aqa-h-t/1.3-specialised-cells" target="_blank" class="cognito-link">1.3 - Specialised Cells</a>
-                </div>
-
-                <div class="subject-block subject-physics">
-                    <p class="subject-title">Physics (2 hours): P1 Energy - Review Knowledge Organiser (booklet pages 2-8)</p>
-                    <p class="font-medium text-sm mt-2 mb-1 text-gray-700">CognitoEdu Subtopics:</p>
-                    <a href="https://cognitoedu.org/lessons/p2-gcse-aqa-h-t/1.1-energy-stores-and-systems" target="_blank" class="cognito-link">1.1 - Energy Stores and Systems</a>
-                    <a href="https://cognitoedu.org/lessons/p2-gcse-aqa-h-t/1.2-energy-transfers" target="_blank" class="cognito-link">1.2 - Energy Transfers</a>
-                    <a href="https://cognitoedu.org/lessons/p2-gcse-aqa-h-t/1.3-power" target="_blank" class="cognito-link">1.3 - Power</a>
-                </div>
-            </div>
-
-            <!-- Friday, June 6, 2025 -->
-            <div class="day-card">
-                <h2 class="text-2xl font-bold text-gray-800 mb-4 pb-2 border-b-2 border-blue-200">Friday, June 6, 2025</h2>
-                
-                <div class="subject-block subject-maths">
-                    <p class="subject-title">Maths (2 hours)</p>
-                    <ul class="activity-list">
-                        <li>Estimation</li>
-                        <li>Best Buys</li>
-                        <li>Currency</li>
-                        <li>Conversion Graphs</li>
-                        <li>Indices</li>
-                        <li>Laws of Indices</li>
-                        <li>Negative Indices</li>
-                        <li>Fractional Indices</li>
-                        <li>LCM</li>
-                    </ul>
-                </div>
-
-                <div class="subject-block subject-chemistry">
-                    <p class="subject-title">Chemistry (2 hours): C1 Atomic Structure and the Periodic Table - Practice Questions (Pages 8-12)</p>
-                    <p class="font-medium text-sm mt-2 mb-1 text-gray-700">CognitoEdu Subtopics:</p>
-                    <a href="https://cognitoedu.org/lessons/c2-gcse-aqa-h-t/1.5-filtration-crystallisation" target="_blank" class="cognito-link">1.5 - Filtration & Crystallisation</a>
-                    <a href="https://cognitoedu.org/lessons/c2-gcse-aqa-h-t/1.6-distillation" target="_blank" class="cognito-link">1.6 - Distillation</a>
-                    <a href="https://cognitoedu.org/lessons/c2-gcse-aqa-h-t/1.7-the-history-of-the-atom" target="_blank" class="cognito-link">1.7 - The History of the Atom</a>
-                    <a href="https://cognitoedu.org/lessons/c2-gcse-aqa-h-t/1.8-electronic-structure" target="_blank" class="cognito-link">1.8 - Electronic Structure</a>
-                </div>
-
-                <div class="subject-block subject-biology">
-                    <p class="subject-title">Biology (2 hours): B1 Cell Biology - Practice Questions (Pages 10-12)</p>
-                    <p class="font-medium text-sm mt-2 mb-1 text-gray-700">CognitoEdu Subtopics:</p>
-                    <a href="https://cognitoedu.org/lessons/b2-gcse-aqa-h-t/1.4-magnification-resolution" target="_blank" class="cognito-link">1.4 - Magnification & Resolution</a>
-                    <a href="https://cognitoedu.org/lessons/b2-gcse-aqa-h-t/1.5-cell-division-mitosis" target="_blank" class="cognito-link">1.5 - Cell Division & Mitosis</a>
-                    <a href="https://cognitoedu.org/lessons/b2-gcse-aqa-h-t/1.6-stem-cells" target="_blank" class="cognito-link">1.6 - Stem Cells</a>
-                </div>
-
-                <div class="subject-block subject-physics">
-                    <p class="subject-title">Physics (2 hours): P1 Energy - Review Knowledge Organiser (booklet pages 2-8)</p>
-                    <p class="font-medium text-sm mt-2 mb-1 text-gray-700">CognitoEdu Subtopics:</p>
-                    <a href="https://cognitoedu.org/lessons/p2-gcse-aqa-h-t/1.4-conservation-of-energy" target="_blank" class="cognito-link">1.4 - Conservation of Energy</a>
-                    <a href="https://cognitoedu.org/lessons/p2-gcse-aqa-h-t/1.5-work-done" target="_blank" class="cognito-link">1.5 - Work Done</a>
-                    <a href="https://cognitoedu.org/lessons/p2-gcse-aqa-h-t/1.6-energy-transfers-in-a-system" target="_blank" class="cognito-link">1.6 - Energy Transfers in a System</a>
-                </div>
-            </div>
-
-            <!-- Saturday, June 7, 2025 -->
-            <div class="day-card">
-                <h2 class="text-2xl font-bold text-gray-800 mb-4 pb-2 border-b-2 border-blue-200">Saturday, June 7, 2025</h2>
-                
-                <div class="subject-block subject-maths">
-                    <p class="subject-title">Maths (2 hours)</p>
-                    <ul class="activity-list">
-                        <li>HCF</li>
-                        <li>Product of Primes</li>
-                        <li>Applying Product of Primes</li>
-                        <li>Product of Primes (LCM/HCF)</li>
-                        <li>Standard Form</li>
-                        <li>Expressing as a Percentage</li>
-                        <li>Percentage of Amounts</li>
-                        <li>Percentage Change</li>
-                        <li>Simple Interest</li>
-                    </ul>
-                </div>
-
-                <div class="subject-block subject-chemistry">
-                    <p class="subject-title">Chemistry (2 hours): C1 Atomic Structure and the Periodic Table - Practice Questions (Pages 13-18)</p>
-                    <p class="font-medium text-sm mt-2 mb-1 text-gray-700">CognitoEdu Subtopics:</p>
-                    <a href="https://cognitoedu.org/lessons/c2-gcse-aqa-h-t/1.9-development-of-the-periodic-table" target="_blank" class="cognito-link">1.9 - Development of the Periodic Table</a>
-                    <a href="https://cognitoedu.org/lessons/c2-gcse-aqa-h-t/1.10-metals-non-metals" target="_blank" class="cognito-link">1.10 - Metals & Non-metals</a>
-                    <a href="https://cognitoedu.org/lessons/c2-gcse-aqa-h-t/1.11-group-1-alkali-metals" target="_blank" class="cognito-link">1.11 - Group 1 (Alkali Metals)</a>
-                    <a href="https://cognitoedu.org/lessons/c2-gcse-aqa-h-t/1.12-group-7-group-0-halogens-noble-gases" target="_blank" class="cognito-link">1.12 - Group 7 & Group 0 (Halogens & Noble Gases)</a>
-                </div>
-
-                <div class="subject-block subject-biology">
-                    <p class="subject-title">Biology (2 hours): B1 Cell Biology - Practice Questions (Pages 13-17)</p>
-                    <p class="font-medium text-sm mt-2 mb-1 text-gray-700">CognitoEdu Subtopics:</p>
-                    <a href="https://cognitoedu.org/lessons/b2-gcse-aqa-h-t/1.7-diffusion" target="_blank" class="cognito-link">1.7 - Diffusion</a>
-                    <a href="https://cognitoedu.org/lessons/b2-gcse-aqa-h-t/1.8-osmosis" target="_blank" class="cognito-link">1.8 - Osmosis</a>
-                    <a href="https://cognitoedu.org/lessons/b2-gcse-aqa-h-t/1.9-active-transport" target="_blank" class="cognito-link">1.9 - Active Transport</a>
-                    <a href="https://cognitoedu.org/lessons/b2-gcse-aqa-h-t/1.10-exchange-surfaces" target="_blank" class="cognito-link">1.10 - Exchange Surfaces</a>
-                </div>
-
-                <div class="subject-block subject-physics">
-                    <p class="subject-title">Physics (2 hours): P1 Energy - Practice Questions (booklet pages 13-20)</p>
-                    <p class="font-medium text-sm mt-2 mb-1 text-gray-700">CognitoEdu Subtopics:</p>
-                    <a href="https://cognitoedu.org/lessons/p2-gcse-aqa-h-t/1.7-specific-heat-capacity" target="_blank" class="cognito-link">1.7 - Specific Heat Capacity</a>
-                    <a href="https://cognitoedu.org/lessons/p2-gcse-aqa-h-t/1.8-energy-efficiency" target="_blank" class="cognito-link">1.8 - Energy Efficiency</a>
-                </div>
-            </div>
-
-            <!-- Sunday, June 8, 2025 -->
-            <div class="day-card">
-                <h2 class="text-2xl font-bold text-gray-800 mb-4 pb-2 border-b-2 border-blue-200">Sunday, June 8, 2025</h2>
-                
-                <div class="subject-block subject-maths">
-                    <p class="subject-title">Maths (2 hours)</p>
-                    <ul class="activity-list">
-                        <li>Compound Interest</li>
-                        <li>Reverse Percentages</li>
-                        <li>Growth and Decay</li>
-                        <li>Fractions of an Amount</li>
-                        <li>Expressing as a Fraction</li>
-                        <li>Area of a Trapezium</li>
-                        <li>Area of a Circle</li>
-                        <li>Circumference of a Circle</li>
-                        <li>Perimeter of a Semicircle</li>
-                    </ul>
-                </div>
-
-                <div class="subject-block subject-chemistry">
-                    <p class="subject-title">Chemistry (2 hours): C2 Bonding, Structure and Properties of Matter - Review Knowledge Organiser</p>
-                    <p class="font-medium text-sm mt-2 mb-1 text-gray-700">CognitoEdu Subtopics:</p>
-                    <a href="https://cognitoedu.org/lessons/c2-gcse-aqa-h-t/2.1-states-of-matter" target="_blank" class="cognito-link">2.1 - States of Matter</a>
-                    <a href="https://cognitoedu.org/lessons/c2-gcse-aqa-h-t/2.2-pure-impure-substances" target="_blank" class="cognito-link">2.2 - Pure & Impure Substances</a>
-                    <a href="https://cognitoedu.org/lessons/c2-gcse-aqa-h-t/2.3-ionic-bonding" target="_blank" class="cognito-link">2.3 - Ionic Bonding</a>
-                    <a href="https://cognitoedu.org/lessons/c2-gcse-aqa-h-t/2.4-ionic-compounds" target="_blank" class="cognito-link">2.4 - Ionic Compounds</a>
-                </div>
-
-                <div class="subject-block subject-biology">
-                    <p class="subject-title">Biology (2 hours): B2 Organisation - Review Knowledge Organiser</p>
-                    <p class="font-medium text-sm mt-2 mb-1 text-gray-700">CognitoEdu Subtopics:</p>
-                    <a href="https://cognitoedu.org/lessons/b2-gcse-aqa-h-t/2.1-organisation" target="_blank" class="cognito-link">2.1 - Organisation</a>
-                    <a href="https://cognitoedu.org/lessons/b2-gcse-aqa-h-t/2.2-the-digestive-system" target="_blank" class="cognito-link">2.2 - The Digestive System</a>
-                    <a href="https://cognitoedu.org/lessons/b2-gcse-aqa-h-t/2.3-enzymes" target="_blank" class="cognito-link">2.3 - Enzymes</a>
-                </div>
-
-                <div class="subject-block subject-physics">
-                    <p class="subject-title">Physics (2 hours): P1 Energy - Practice Questions (booklet pages 21-30)</p>
-                    <p class="font-medium text-sm mt-2 mb-1 text-gray-700">CognitoEdu Subtopics:</p>
-                    <a href="https://cognitoedu.org/lessons/p2-gcse-aqa-h-t/1.9-energy-resources" target="_blank" class="cognito-link">1.9 - Energy Resources</a>
-                    <a href="https://cognitoedu.org/lessons/p2-gcse-aqa-h-t/1.10-non-renewable-renewable-resources" target="_blank" class="cognito-link">1.10 - Non-Renewable & Renewable Resources</a>
-                </div>
-            </div>
-
-            <!-- Monday, June 9, 2025 -->
-            <div class="day-card">
-                <h2 class="text-2xl font-bold text-gray-800 mb-4 pb-2 border-b-2 border-blue-200">Monday, June 9, 2025</h2>
-                
-                <div class="subject-block subject-maths">
-                    <p class="subject-title">Maths (2 hours)</p>
-                    <ul class="activity-list">
-                        <li>Area of a Sector</li>
-                        <li>Volume of a Prism</li>
-                        <li>Volume of a Cylinder</li>
-                        <li>Volume of a Cone</li>
-                        <li>Volume of a Sphere</li>
-                        <li>Surface Area of a Cylinder</li>
-                        <li>Surface Area of a Cone</li>
-                        <li>Surface Area of a Sphere</li>
-                        <li>Density</li>
-                    </ul>
-                </div>
-
-                <div class="subject-block subject-chemistry">
-                    <p class="subject-title">Chemistry (2 hours): C2 Bonding, Structure and Properties of Matter - Practice Questions (Pages 30-43)</p>
-                    <p class="font-medium text-sm mt-2 mb-1 text-gray-700">CognitoEdu Subtopics:</p>
-                    <a href="https://cognitoedu.org/lessons/c2-gcse-aqa-h-t/2.5-covalent-bonding" target="_blank" class="cognito-link">2.5 - Covalent Bonding</a>
-                    <a href="https://cognitoedu.org/lessons/c2-gcse-aqa-h-t/2.6-simple-covalent-structures" target="_blank" class="cognito-link">2.6 - Simple Covalent Structures</a>
-                    <a href="https://cognitoedu.org/lessons/c2-gcse-aqa-h-t/2.7-giant-covalent-structures" target="_blank" class="cognito-link">2.7 - Giant Covalent Structures</a>
-                </div>
-
-                <div class="subject-block subject-biology">
-                    <p class="subject-title">Biology (2 hours): B2 Organisation - Practice Questions (Pages 28-30)</p>
-                    <p class="font-medium text-sm mt-2 mb-1 text-gray-700">CognitoEdu Subtopics:</p>
-                    <a href="https://cognitoedu.org/lessons/b2-gcse-aqa-h-t/2.4-the-heart" target="_blank" class="cognito-link">2.4 - The Heart</a>
-                    <a href="https://cognitoedu.org/lessons/b2-gcse-aqa-h-t/2.5-blood-vessels" target="_blank" class="cognito-link">2.5 - Blood Vessels</a>
-                    <a href="https://cognitoedu.org/lessons/b2-gcse-aqa-h-t/2.6-blood" target="_blank" class="cognito-link">2.6 - Blood</a>
-                </div>
-
-                <div class="subject-block subject-physics">
-                    <p class="subject-title">Physics (2 hours): P2 Electricity - Review Knowledge Organiser (booklet pages 37-43)</p>
-                    <p class="font-medium text-sm mt-2 mb-1 text-gray-700">CognitoEdu Subtopics:</p>
-                    <a href="https://cognitoedu.org/lessons/p2-gcse-aqa-h-t/2.1-circuit-diagrams" target="_blank" class="cognito-link">2.1 - Circuit Diagrams</a>
-                    <a href="https://cognitoedu.org/lessons/p2-gcse-aqa-h-t/2.2-current-voltage" target="_blank" class="cognito-link">2.2 - Current & Voltage</a>
-                    <a href="https://cognitoedu.org/lessons/p2-gcse-aqa-h-t/2.3-resistance" target="_blank" class="cognito-link">2.3 - Resistance</a>
-                </div>
-            </div>
-
-            <!-- Tuesday, June 10, 2025 -->
-            <div class="day-card">
-                <h2 class="text-2xl font-bold text-gray-800 mb-4 pb-2 border-b-2 border-blue-200">Tuesday, June 10, 2025</h2>
-                
-                <div class="subject-block subject-maths">
-                    <p class="subject-title">Maths (2 hours)</p>
-                    <ul class="activity-list">
-                        <li>Pressure</li>
-                        <li>Error Intervals</li>
-                        <li>Limits of Accuracy</li>
-                        <li>Rounding</li>
-                        <li>Types of Number</li>
-                        <li>Factors</li>
-                        <li>Multiples</li>
-                        <li>Primes</li>
-                        <li>Prime Factor Trees</li>
-                        <li>Square and Cube Numbers</li>
-                        <li>Roots</li>
-                    </ul>
-                </div>
-
-                <div class="subject-block subject-chemistry">
-                    <p class="subject-title">Chemistry (2 hours): C2 Bonding, Structure and Properties of Matter - Practice Questions (Pages 44-57)</p>
-                    <p class="font-medium text-sm mt-2 mb-1 text-gray-700">CognitoEdu Subtopics:</p>
-                    <a href="https://cognitoedu.org/lessons/c2-gcse-aqa-h-t/2.8-metallic-bonding" target="_blank" class="cognito-link">2.8 - Metallic Bonding</a>
-                    <a href="https://cognitoedu.org/lessons/c2-gcse-aqa-h-t/2.9-alloys" target="_blank" class="cognito-link">2.9 - Alloys</a>
-                    <a href="https://cognitoedu.org/lessons/c2-gcse-aqa-h-t/2.10-polymers" target="_blank" class="cognito-link">2.10 - Polymers</a>
-                    <a href="https://cognitoedu.org/lessons/c2-gcse-aqa-h-t/2.11-nanoscience" target="_blank" class="cognito-link">2.11 - Nanoscience</a>
-                </div>
-
-                <div class="subject-block subject-biology">
-                    <p class="subject-title">Biology (2 hours): B2 Organisation - Practice Questions (Pages 31-36)</p>
-                    <p class="font-medium text-sm mt-2 mb-1 text-gray-700">CognitoEdu Subtopics:</p>
-                    <a href="https://cognitoedu.org/lessons/b2-gcse-aqa-h-t/2.7-non-communicable-diseases" target="_blank" class="cognito-link">2.7 - Non-communicable Diseases</a>
-                    <a href="https://cognitoedu.org/lessons/b2-gcse-aqa-h-t/2.8-plant-tissues" target="_blank" class="cognito-link">2.8 - Plant Tissues</a>
-                    <a href="https://cognitoedu.org/lessons/b2-gcse-aqa-h-t/2.9-transpiration" target="_blank" class="cognito-link">2.9 - Transpiration</a>
-                </div>
-
-                <div class="subject-block subject-physics">
-                    <p class="subject-title">Physics (2 hours): P2 Electricity - Review Knowledge Organiser (booklet pages 37-43)</p>
-                    <p class="font-medium text-sm mt-2 mb-1 text-gray-700">CognitoEdu Subtopics:</p>
-                    <a href="https://cognitoedu.org/lessons/p2-gcse-aqa-h-t/2.4-ohms-law" target="_blank" class="cognito-link">2.4 - Ohm's Law</a>
-                    <a href="https://cognitoedu.org/lessons/p2-gcse-aqa-h-t/2.5-resistors-in-series" target="_blank" class="cognito-link">2.5 - Resistors in Series</a>
-                    <a href="https://cognitoedu.org/lessons/p2-gcse-aqa-h-t/2.6-resistors-in-parallel" target="_blank" class="cognito-link">2.6 - Resistors in Parallel</a>
-                </div>
-            </div>
-
-            <!-- Wednesday, June 11, 2025 -->
-            <div class="day-card">
-                <h2 class="text-2xl font-bold text-gray-800 mb-4 pb-2 border-b-2 border-blue-200">Wednesday, June 11, 2025</h2>
-                
-                <div class="subject-block subject-maths">
-                    <p class="subject-title">Maths (2 hours)</p>
-                    <ul class="activity-list">
-                        <li>Reciprocals</li>
-                        <li>Powers of 10</li>
-                        <li>Order of Operations</li>
-                        <li>Algebraic Notation</li>
-                        <li>Collecting Like Terms</li>
-                        <li>Expanding Brackets</li>
-                        <li>Factorising</li>
-                        <li>Solving Equations</li>
-                        <li>Forming Equations</li>
-                    </ul>
-                </div>
-
-                <div class="subject-block subject-chemistry">
-                    <p class="subject-title">Chemistry (2 hours): C3 Quantitative Chemistry - Review Knowledge Organiser</p>
-                    <p class="font-medium text-sm mt-2 mb-1 text-gray-700">CognitoEdu Subtopics:</p>
-                    <a href="https://cognitoedu.org/lessons/c2-gcse-aqa-h-t/3.1-relative-formula-mass" target="_blank" class="cognito-link">3.1 - Relative Formula Mass</a>
-                    <a href="https://cognitoedu.org/lessons/c2-gcse-aqa-h-t/3.2-moles-mass" target="_blank" class="cognito-link">3.2 - Moles & Mass</a>
-                    <a href="https://cognitoedu.org/lessons/c2-gcse-aqa-h-t/3.3-calculating-mass-in-reactions" target="_blank" class="cognito-link">3.3 - Calculating Mass in Reactions</a>
-                </div>
-
-                <div class="subject-block subject-biology">
-                    <p class="subject-title">Biology (2 hours): B3 Infection & Response - Review Knowledge Organiser</p>
-                    <p class="font-medium text-sm mt-2 mb-1 text-gray-700">CognitoEdu Subtopics:</p>
-                    <a href="https://cognitoedu.org/lessons/b2-gcse-aqa-h-t/3.1-pathogens" target="_blank" class="cognito-link">3.1 - Pathogens</a>
-                    <a href="https://cognitoedu.org/lessons/b2-gcse-aqa-h-t/3.2-viral-diseases" target="_blank" class="cognito-link">3.2 - Viral Diseases</a>
-                    <a href="https://cognitoedu.org/lessons/b2-gcse-aqa-h-t/3.3-bacterial-diseases" target="_blank" class="cognito-link">3.3 - Bacterial Diseases</a>
-                </div>
-
-                <div class="subject-block subject-physics">
-                    <p class="subject-title">Physics (2 hours): P2 Electricity - Practice Questions (booklet pages 44-55)</p>
-                    <p class="font-medium text-sm mt-2 mb-1 text-gray-700">CognitoEdu Subtopics:</p>
-                    <a href="https://cognitoedu.org/lessons/p2-gcse-aqa-h-t/2.7-ldrs-thermistors" target="_blank" class="cognito-link">2.7 - LDRs & Thermistors</a>
-                    <a href="https://cognitoedu.org/lessons/p2-gcse-aqa-h-t/2.8-electrical-power" target="_blank" class="cognito-link">2.8 - Electrical Power</a>
-                </div>
-            </div>
-
-            <!-- Thursday, June 12, 2025 -->
-            <div class="day-card">
-                <h2 class="text-2xl font-bold text-gray-800 mb-4 pb-2 border-b-2 border-blue-200">Thursday, June 12, 2025</h2>
-                
-                <div class="subject-block subject-maths">
-                    <p class="subject-title">Maths (2 hours)</p>
-                    <ul class="activity-list">
-                        <li>Inequalities</li>
-                        <li>Changing the Subject</li>
-                        <li>Substitution</li>
-                        <li>Sequences</li>
-                        <li>Nth Term</li>
-                        <li>Quadratic Sequences</li>
-                        <li>Coordinates</li>
-                        <li>Straight Line Graphs</li>
-                        <li>Gradient</li>
-                    </ul>
-                </div>
-
-                <div class="subject-block subject-chemistry">
-                    <p class="subject-title">Chemistry (2 hours): C3 Quantitative Chemistry - Practice Questions (Pages 62-75)</p>
-                    <p class="font-medium text-sm mt-2 mb-1 text-gray-700">CognitoEdu Subtopics:</p>
-                    <a href="https://cognitoedu.org/lessons/c2-gcse-aqa-h-t/3.4-conservation-of-mass" target="_blank" class="cognito-link">3.4 - Conservation of Mass</a>
-                    <a href="https://cognitoedu.org/lessons/c2-gcse-aqa-h-t/3.5-limiting-reactants" target="_blank" class="cognito-link">3.5 - Limiting Reactants</a>
-                    <a href="https://cognitoedu.org/lessons/c2-gcse-aqa-h-t/3.6-concentration-calculations-grams-dm3" target="_blank" class="cognito-link">3.6 - Concentration Calculations (grams/dm^3)</a>
-                </div>
-
-                <div class="subject-block subject-biology">
-                    <p class="subject-title">Biology (2 hours): B3 Infection & Response - Practice Questions (Pages 40-42)</p>
-                    <p class="font-medium text-sm mt-2 mb-1 text-gray-700">CognitoEdu Subtopics:</p>
-                    <a href="https://cognitoedu.org/lessons/b2-gcse-aqa-h-t/3.4-fungal-protist-diseases" target="_blank" class="cognito-link">3.4 - Fungal & Protist Diseases</a>
-                    <a href="https://cognitoedu.org/lessons/b2-gcse-aqa-h-t/3.5-defence-systems" target="_blank" class="cognito-link">3.5 - Defence Systems</a>
-                    <a href="https://cognitoedu.org/lessons/b2-gcse-aqa-h-t/3.6-vaccination" target="_blank" class="cognito-link">3.6 - Vaccination</a>
-                </div>
-
-                <div class="subject-block subject-physics">
-                    <p class="subject-title">Physics (2 hours): P2 Electricity - Review Knowledge Organiser (booklet pages 37-43)</p>
-                    <p class="font-medium text-sm mt-2 mb-1 text-gray-700">CognitoEdu Subtopics:</p>
-                    <a href="https://cognitoedu.org/lessons/p2-gcse-aqa-h-t/2.9-energy-transfer-in-circuits" target="_blank" class="cognito-link">2.9 - Energy Transfer in Circuits</a>
-                    <a href="https://cognitoedu.org/lessons/p2-gcse-aqa-h-t/2.10-mains-electricity" target="_blank" class="cognito-link">2.10 - Mains Electricity</a>
-                    <a href="https://cognitoedu.org/lessons/p2-gcse-aqa-h-t/2.11-power-in-circuits" target="_blank" class="cognito-link">2.11 - Power in Circuits</a>
-                </div>
-            </div>
-
-            <!-- Friday, June 13, 2025 -->
-            <div class="day-card">
-                <h2 class="text-2xl font-bold text-gray-800 mb-4 pb-2 border-b-2 border-blue-200">Friday, June 13, 2025</h2>
-                
-                <div class="subject-block subject-maths">
-                    <p class="subject-title">Maths (2 hours)</p>
-                    <ul class="activity-list">
-                        <li>Trigonometric Graphs</li>
-                        <li>Solving Equations Graphically</li>
-                        <li>Sketching Graphs</li>
-                    </ul>
-                </div>
-
-                <div class="subject-block subject-chemistry">
-                    <p class="subject-title">Chemistry (2 hours): C3 Quantitative Chemistry - Practice Questions (Pages 76-88)</p>
-                    <p class="font-medium text-sm mt-2 mb-1 text-gray-700">CognitoEdu Subtopics:</p>
-                    <a href="https://cognitoedu.org/lessons/c2-gcse-aqa-h-t/3.7-gas-calculations" target="_blank" class="cognito-link">3.7 - Gas Calculations</a>
-                    <a href="https://cognitoedu.org/lessons/c2-gcse-aqa-h-t/3.8-atom-economy" target="_blank" class="cognito-link">3.8 - Atom Economy</a>
-                    <a href="https://cognitoedu.org/lessons/c2-gcse-aqa-h-t/3.9-percentage-yield" target="_blank" class="cognito-link">3.9 - Percentage Yield</a>
-                </div>
-
-                <div class="subject-block subject-biology">
-                    <p class="subject-title">Biology (2 hours): B3 Infection & Response - Practice Questions (Pages 43-48)</p>
-                    <p class="font-medium text-sm mt-2 mb-1 text-gray-700">CognitoEdu Subtopics:</p>
-                    <a href="https://cognitoedu.org/lessons/b2-gcse-aqa-h-t/3.7-antibiotics" target="_blank" class="cognito-link">3.7 - Antibiotics</a>
-                    <a href="https://cognitoedu.org/lessons/b2-gcse-aqa-h-t/3.8-drug-development" target="_blank" class="cognito-link">3.8 - Drug Development</a>
-                    <a href="https://cognitoedu.org/lessons/b2-gcse-aqa-h-t/3.9-monoclonal-antibodies-triple-only" target="_blank" class="cognito-link">3.9 - Monoclonal Antibodies (Triple Only)</a>
-                    <a href="https://cognitoedu.org/lessons/b2-gcse-aqa-h-t/3.10-plant-diseases-defences-triple-only" target="_blank" class="cognito-link">3.10 - Plant Diseases & Defences (Triple Only)</a>
-                </div>
-
-                <div class="subject-block subject-physics">
-                    <p class="subject-title">Physics (2 hours): P2 Electricity - Practice Questions (booklet pages 56-70)</p>
-                    <p class="font-medium text-sm mt-2 mb-1 text-gray-700">CognitoEdu Subtopics:</p>
-                    <a href="https://cognitoedu.org/lessons/p2-gcse-aqa-h-t/2.12-domestic-electricity" target="_blank" class="cognito-link">2.12 - Domestic Electricity</a>
-                    <a href="https://cognitoedu.org/lessons/p2-gcse-aqa-h-t/2.13-national-grid" target="_blank" class="cognito-link">2.13 - National Grid</a>
-                </div>
-            </div>
-
-            <!-- Saturday, June 14, 2025 -->
-            <div class="day-card">
-                <h2 class="text-2xl font-bold text-gray-800 mb-4 pb-2 border-b-2 border-blue-200">Saturday, June 14, 2025</h2>
-                
-                <div class="subject-block subject-maths">
-                    <p class="subject-title">Maths (2 hours)</p>
-                    <ul class="activity-list">
-                        <li>Transformations of Graphs</li>
-                        <li>Solving Quadratic Equations</li>
-                        <li>Completing the Square</li>
-                        <li>The Quadratic Formula</li>
-                        <li>Simultaneous Equations</li>
-                        <li>Linear and Quadratic Simultaneous Equations</li>
-                        <li>Factorising Quadratics</li>
-                        <li>Algebraic Fractions</li>
-                        <li>Functions</li>
-                    </ul>
-                </div>
-
-                <div class="subject-block subject-chemistry">
-                    <p class="subject-title">Chemistry (2 hours): C4 Chemical Changes - Review Knowledge Organiser</p>
-                    <p class="font-medium text-sm mt-2 mb-1 text-gray-700">CognitoEdu Subtopics:</p>
-                    <a href="https://cognitoedu.org/lessons/c2-gcse-aqa-h-t/4.1-acids-bases" target="_blank" class="cognito-link">4.1 - Acids & Bases</a>
-                    <a href="https://cognitoedu.org/lessons/c2-gcse-aqa-h-t/4.2-titration-practical" target="_blank" class="cognito-link">4.2 - Titration Practical</a>
-                    <a href="https://cognitoedu.org/lessons/c2-gcse-aqa-h-t/4.3-strong-acids-weak-acids" target="_blank" class="cognito-link">4.3 - Strong Acids & Weak Acids</a>
-                </div>
-
-                <div class="subject-block subject-biology">
-                    <p class="subject-title">Biology (2 hours): B4 Bioenergetics - Review Knowledge Organiser</p>
-                    <p class="font-medium text-sm mt-2 mb-1 text-gray-700">CognitoEdu Subtopics:</p>
-                    <a href="https://cognitoedu.org/lessons/b2-gcse-aqa-h-t/4.1-photosynthesis" target="_blank" class="cognito-link">4.1 - Photosynthesis</a>
-                    <a href="https://cognitoedu.org/lessons/b2-gcse-aqa-h-t/4.2-limiting-factors-of-photosynthesis" target="_blank" class="cognito-link">4.2 - Limiting Factors of Photosynthesis</a>
-                </div>
-
-                <div class="subject-block subject-physics">
-                    <p class="subject-title">Physics (2 hours): P3 Particle Model of Matter - Review Knowledge Organiser (booklet pages 71-76)</p>
-                    <p class="font-medium text-sm mt-2 mb-1 text-gray-700">CognitoEdu Subtopics:</p>
-                    <a href="https://cognitoedu.org/lessons/p2-gcse-aqa-h-t/3.1-states-of-matter" target="_blank" class="cognito-link">3.1 - States of Matter</a>
-                    <a href="https://cognitoedu.org/lessons/p2-gcse-aqa-h-t/3.2-density" target="_blank" class="cognito-link">3.2 - Density</a>
-                </div>
-            </div>
-
-            <!-- Sunday, June 15, 2025 -->
-            <div class="day-card">
-                <h2 class="text-2xl font-bold text-gray-800 mb-4 pb-2 border-b-2 border-blue-200">Sunday, June 15, 2025</h2>
-                
-                <div class="subject-block subject-maths">
-                    <p class="subject-title">Maths (2 hours)</p>
-                    <ul class="activity-list">
-                        <li>Inverse Functions</li>
-                        <li>Composite Functions</li>
-                        <li>Proof</li>
-                        <li>Circles</li>
-                        <li>Circle Theorems</li>
-                        <li>Vectors</li>
-                        <li>Vectors (Geometry)</li>
-                        <li>Geometric Proof</li>
-                        <li>Ratio</li>
-                    </ul>
-                </div>
-
-                <div class="subject-block subject-chemistry">
-                    <p class="subject-title">Chemistry (2 hours): C4 Chemical Changes - Practice Questions (Pages 92-105)</p>
-                    <p class="font-medium text-sm mt-2 mb-1 text-gray-700">CognitoEdu Subtopics:</p>
-                    <a href="https://cognitoedu.org/lessons/c2-gcse-aqa-h-t/4.4-neutralisation-reactions" target="_blank" class="cognito-link">4.4 - Neutralisation Reactions</a>
-                    <a href="https://cognitoedu.org/lessons/c2-gcse-aqa-h-t/4.5-the-reactivity-series-displacement-reactions" target="_blank" class="cognito-link">4.5 - The Reactivity Series & Displacement Reactions</a>
-                    <a href="https://cognitoedu.org/lessons/c2-gcse-aqa-h-t/4.6-separating-metals-from-metal-oxides" target="_blank" class="cognito-link">4.6 - Separating Metals from Metal Oxides</a>
-                </div>
-
-                <div class="subject-block subject-biology">
-                    <p class="subject-title">Biology (2 hours): B4 Bioenergetics - Practice Questions (Pages 53-55)</p>
-                    <p class="font-medium text-sm mt-2 mb-1 text-gray-700">CognitoEdu Subtopics:</p>
-                    <a href="https://cognitoedu.org/lessons/b2-gcse-aqa-h-t/4.3-respiration" target="_blank" class="cognito-link">4.3 - Respiration</a>
-                    <a href="https://cognitoedu.org/lessons/b2-gcse-aqa-h-t/4.4-aerobic-respiration" target="_blank" class="cognito-link">4.4 - Aerobic Respiration</a>
-                    <a href="https://cognitoedu.org/lessons/b2-gcse-aqa-h-t/4.5-anaerobic-respiration" target="_blank" class="cognito-link">4.5 - Anaerobic Respiration</a>
-                </div>
-
-                <div class="subject-block subject-physics">
-                    <p class="subject-title">Physics (2 hours): P3 Particle Model of Matter - Review Knowledge Organiser (booklet pages 71-76)</p>
-                    <p class="font-medium text-sm mt-2 mb-1 text-gray-700">CognitoEdu Subtopics:</p>
-                    <a href="https://cognitoedu.org/lessons/p2-gcse-aqa-h-t/3.3-internal-energy-heat-capacity" target="_blank" class="cognito-link">3.3 - Internal Energy & Heat Capacity</a>
-                    <a href="https://cognitoedu.org/lessons/p2-gcse-aqa-h-t/3.4-changes-of-state" target="_blank" class="cognito-link">3.4 - Changes of State</a>
-                </div>
-            </div>
-
-            <!-- Monday, June 16, 2025 -->
-            <div class="day-card">
-                <h2 class="text-2xl font-bold text-gray-800 mb-4 pb-2 border-b-2 border-blue-200">Monday, June 16, 2025</h2>
-                
-                <div class="subject-block subject-maths">
-                    <p class="subject-title">Maths (2 hours)</p>
-                    <ul class="activity-list">
-                        <li>Proportion</li>
-                        <li>Direct and Inverse Proportion</li>
-                        <li>Direct and Inverse Proportion (Graphs)</li>
-                        <li>Direct and Inverse Proportion (Equations)</li>
-                        <li>Similarity</li>
-                        <li>Congruence</li>
-                        <li>Area and Volume of Similar Shapes</li>
-                        <li>Scale Drawings</li>
-                        <li>Bearings</li>
-                    </ul>
-                </div>
-
-                <div class="subject-block subject-chemistry">
-                    <p class="subject-title">Chemistry (2 hours): C4 Chemical Changes - Practice Questions (Pages 106-118)</p>
-                    <p class="font-medium text-sm mt-2 mb-1 text-gray-700">CognitoEdu Subtopics:</p>
-                    <a href="https://cognitoedu.org/lessons/c2-gcse-aqa-h-t/4.7-redox-reactions" target="_blank" class="cognito-link">4.7 - Redox Reactions</a>
-                    <a href="https://cognitoedu.org/lessons/c2-gcse-aqa-h-t/4.8-electrolysis-1-introduction" target="_blank" class="cognito-link">4.8 - Electrolysis 1 - Introduction</a>
-                    <a href="https://cognitoedu.org/lessons/c2-gcse-aqa-h-t/4.9-electrolysis-2-aluminium-oxide" target="_blank" class="cognito-link">4.9 - Electrolysis 2 - Aluminium Oxide</a>
-                    <a href="https://cognitoedu.org/lessons/c2-gcse-aqa-h-t/4.10-electrolysis-3-aqueous-solutions" target="_blank" class="cognito-link">4.10 - Electrolysis 3 - Aqueous Solutions</a>
-                </div>
-
-                <div class="subject-block subject-biology">
-                    <p class="subject-title">Biology (2 hours): B4 Bioenergetics - Practice Questions (Pages 56-59)</p>
-                    <p class="font-medium text-sm mt-2 mb-1 text-gray-700">CognitoEdu Subtopics:</p>
-                    <a href="https://cognitoedu.org/lessons/b2-gcse-aqa-h-t/4.6-metabolism" target="_blank" class="cognito-link">4.6 - Metabolism</a>
-                    <a href="https://cognitoedu.org/lessons/b2-gcse-aqa-h-t/4.7-required-practicals" target="_blank" class="cognito-link">4.7 - Required Practicals</a>
-                </div>
-
-                <div class="subject-block subject-physics">
-                    <p class="subject-title">Physics (2 hours): P3 Particle Model of Matter - Practice Questions (booklet pages 72-89)</p>
-                    <p class="font-medium text-sm mt-2 mb-1 text-gray-700">CognitoEdu Subtopics:</p>
-                    <a href="https://cognitoedu.org/lessons/p2-gcse-aqa-h-t/3.5-gas-pressure" target="_blank" class="cognito-link">3.5 - Gas Pressure</a>
-                    <a href="https://cognitoedu.org/lessons/p2-gcse-aqa-h-t/3.6-gas-pressure-volume" target="_blank" class="cognito-link">3.6 - Gas Pressure & Volume</a>
-                    <a href="https://cognitoedu.org/lessons/p2-gcse-aqa-h-t/3.7-specific-latent-heat" target="_blank" class="cognito-link">3.7 - Specific Latent Heat</a>
-                </div>
-            </div>
-
-            <!-- Tuesday, June 17, 2025 -->
-            <div class="day-card">
-                <h2 class="text-2xl font-bold text-gray-800 mb-4 pb-2 border-b-2 border-blue-200">Tuesday, June 17, 2025</h2>
-                
-                <div class="subject-block subject-maths">
-                    <p class="subject-title">Maths (2 hours)</p>
-                    <ul class="activity-list">
-                        <li>Angles</li>
-                        <li>Angles in Parallel Lines</li>
-                        <li>Angles in Polygons</li>
-                        <li>Angles in Triangles</li>
-                        <li>Angles in Quadrilaterals</li>
-                        <li>Angles in a Circle</li>
-                        <li>Construction</li>
-                        <li>Loci</li>
-                        <li>Plans and Elevations</li>
-                    </ul>
-                </div>
-
-                <div class="subject-block subject-chemistry">
-                    <p class="subject-title">Chemistry (2 hours): C5 Energy Changes - Review Knowledge Organiser</p>
-                    <p class="font-medium text-sm mt-2 mb-1 text-gray-700">CognitoEdu Subtopics:</p>
-                    <a href="https://cognitoedu.org/lessons/c2-gcse-aqa-h-t/5.1-exothermic-endothermic-reactions" target="_blank" class="cognito-link">5.1 - Exothermic & Endothermic Reactions</a>
-                    <a href="https://cognitoedu.org/lessons/c2-gcse-aqa-h-t/5.2-bond-energies" target="_blank" class="cognito-link">5.2 - Bond Energies</a>
-                </div>
-
-                <div class="subject-block subject-biology">
-                    <p class="subject-title">Biology (2 hours): B1 Cell Biology - Catch-up / Mixed Practice (using booklet practice questions and relevant CognitoEdu subtopics)</p>
-                    <p class="font-medium text-sm mt-2 mb-1 text-gray-700">CognitoEdu Link for B1 Overview:</p>
-                    <a href="https://cognitoedu.org/course/b2-gcse-aqa-h-t" target="_blank" class="cognito-link">Cell Biology Overview</a>
-                </div>
-
-                <div class="subject-block subject-physics">
-                    <p class="subject-title">Physics (2 hours): P4 Atomic Structure - Review Knowledge Organiser (booklet pages 90-116)</p>
-                    <p class="font-medium text-sm mt-2 mb-1 text-gray-700">CognitoEdu Subtopics:</p>
-                    <a href="https://cognitoedu.org/lessons/p2-gcse-aqa-h-t/4.1-the-atom" target="_blank" class="cognito-link">4.1 - The Atom</a>
-                    <a href="https://cognitoedu.org/lessons/p2-gcse-aqa-h-t/4.2-isotopes" target="_blank" class="cognito-link">4.2 - Isotopes</a>
-                    <a href="https://cognitoedu.org/lessons/p2-gcse-aqa-h-t/4.3-history-of-the-atom" target="_blank" class="cognito-link">4.3 - History of the Atom</a>
-                </div>
-            </div>
-
-            <!-- Wednesday, June 18, 2025 -->
-            <div class="day-card">
-                <h2 class="text-2xl font-bold text-gray-800 mb-4 pb-2 border-b-2 border-blue-200">Wednesday, June 18, 2025</h2>
-                
-                <div class="subject-block subject-maths">
-                    <p class="subject-title">Maths (2 hours)</p>
-                    <ul class="activity-list">
-                        <li>Trigonometry</li>
-                        <li>Sine Rule</li>
-                        <li>Cosine Rule</li>
-                        <li>Area of a Triangle</li>
-                        <li>3D Trigonometry</li>
-                        <li>Pythagoras</li>
-                        <li>3D Pythagoras</li>
-                        <li>Transformations</li>
-                        <li>Reflections</li>
-                    </ul>
-                </div>
-
-                <div class="subject-block subject-chemistry">
-                    <p class="subject-title">Chemistry (2 hours): C5 Energy Changes - Practice Questions (Pages 121-129)</p>
-                    <p class="font-medium text-sm mt-2 mb-1 text-gray-700">CognitoEdu Subtopics:</p>
-                    <a href="https://cognitoedu.org/lessons/c2-gcse-aqa-h-t/5.3-cells-batteries" target="_blank" class="cognito-link">5.3 - Cells & Batteries</a>
-                    <a href="https://cognitoedu.org/lessons/c2-gcse-aqa-h-t/5.4-fuel-cells" target="_blank" class="cognito-link">5.4 - Fuel Cells</a>
-                </div>
-
-                <div class="subject-block subject-biology">
-                    <p class="subject-title">Biology (2 hours): B2 Organisation - Catch-up / Mixed Practice (using booklet practice questions and relevant CognitoEdu subtopics)</p>
-                    <p class="font-medium text-sm mt-2 mb-1 text-gray-700">CognitoEdu Link for B2 Overview:</p>
-                    <a href="https://cognitoedu.org/course/b2-gcse-aqa-h-t" target="_blank" class="cognito-link">Organisation Overview</a>
-                </div>
-
-                <div class="subject-block subject-physics">
-                    <p class="subject-title">Physics (2 hours): P4 Atomic Structure - Review Knowledge Organiser (booklet pages 90-116)</p>
-                    <p class="font-medium text-sm mt-2 mb-1 text-gray-700">CognitoEdu Subtopics:</p>
-                    <a href="https://cognitoedu.org/lessons/p2-gcse-aqa-h-t/4.4-radioactive-decay" target="_blank" class="cognito-link">4.4 - Radioactive Decay</a>
-                    <a href="https://cognitoedu.org/lessons/p2-gcse-aqa-h-t/4.5-alpha-beta-gamma-radiation" target="_blank" class="cognito-link">4.5 - Alpha, Beta, Gamma Radiation</a>
-                </div>
-            </div>
-
-            <!-- Thursday, June 19, 2025 -->
-            <div class="day-card">
-                <h2 class="text-2xl font-bold text-gray-800 mb-4 pb-2 border-b-2 border-blue-200">Thursday, June 19, 2025</h2>
-                
-                <div class="subject-block subject-maths">
-                    <p class="subject-title">Maths (2 hours)</p>
-                    <ul class="activity-list">
-                        <li>Rotations</li>
-                        <li>Translations</li>
-                        <li>Enlargements</li>
-                        <li>Combined Transformations</li>
-                        <li>Vectors (Column Vectors)</li>
-                        <li>Vectors (Magnitude)</li>
-                        <li>Vectors (Parallel Vectors)</li>
-                        <li>Vectors (Resultant Vectors)</li>
-                        <li>Vectors (Position Vectors)</li>
-                    </ul>
-                </div>
-
-                <div class="subject-block subject-chemistry">
-                    <p class="subject-title">Chemistry (2 hours): C5 Energy Changes - Practice Questions (Pages 130-137)</p>
-                    <p class="font-medium text-sm mt-2 mb-1 text-gray-700">Review of C5 topics and preparation for mixed practice</p>
-                </div>
-
-                <div class="subject-block subject-biology">
-                    <p class="subject-title">Biology (2 hours): B3 Infection & Response - Catch-up / Mixed Practice (using booklet practice questions and relevant CognitoEdu subtopics)</p>
-                    <p class="font-medium text-sm mt-2 mb-1 text-gray-700">CognitoEdu Link for B3 Overview:</p>
-                    <a href="https://cognitoedu.org/course/b2-gcse-aqa-h-t" target="_blank" class="cognito-link">Infection & Response Overview</a>
-                </div>
-
-                <div class="subject-block subject-physics">
-                    <p class="subject-title">Physics (2 hours): P4 Atomic Structure - Practice Questions (booklet pages 92-105)</p>
-                    <p class="font-medium text-sm mt-2 mb-1 text-gray-700">CognitoEdu Subtopics:</p>
-                    <a href="https://cognitoedu.org/lessons/p2-gcse-aqa-h-t/4.6-half-life" target="_blank" class="cognito-link">4.6 - Half-Life</a>
-                    <a href="https://cognitoedu.org/lessons/p2-gcse-aqa-h-t/4.7-radiation-background-radiation" target="_blank" class="cognito-link">4.7 - Radiation & Background Radiation</a>
-                </div>
-            </div>
-
-            <!-- Friday, June 20, 2025 -->
-            <div class="day-card">
-                <h2 class="text-2xl font-bold text-gray-800 mb-4 pb-2 border-b-2 border-blue-200">Friday, June 20, 2025</h2>
-                
-                <div class="subject-block subject-maths">
-                    <p class="subject-title">Maths (2 hours)</p>
-                    <ul class="activity-list">
-                        <li>Probability</li>
-                        <li>Relative Frequency</li>
-                        <li>Tree Diagrams</li>
-                        <li>Conditional Probability</li>
-                        <li>Venn Diagrams</li>
-                        <li>Frequency Tables</li>
-                        <li>Grouped Frequency Tables</li>
-                        <li>Bar Charts</li>
-                        <li>Pie Charts</li>
-                    </ul>
-                </div>
-
-                <div class="subject-block subject-chemistry">
-                    <p class="subject-title">Chemistry (2 hours): Catch-up / Mixed Practice for C1-C3 (using booklet practice questions and relevant CognitoEdu subtopics)</p>
-                    <p class="font-medium text-sm mt-2 mb-1 text-gray-700">CognitoEdu Link for All Chemistry Topics:</p>
-                    <a href="https://cognitoedu.org/course/c2-gcse-aqa-h-t" target="_blank" class="cognito-link">GCSE Chemistry AQA Higher Triple Course Overview</a>
-                </div>
-
-                <div class="subject-block subject-biology">
-                    <p class="subject-title">Biology (2 hours): B4 Bioenergetics - Catch-up / Mixed Practice (using booklet practice questions and relevant CognitoEdu subtopics)</p>
-                    <p class="font-medium text-sm mt-2 mb-1 text-gray-700">CognitoEdu Link for B4 Overview:</p>
-                    <a href="https://cognitoedu.org/course/b2-gcse-aqa-h-t" target="_blank" class="cognito-link">Bioenergetics Overview</a>
-                </div>
-
-                <div class="subject-block subject-physics">
-                    <p class="subject-title">Physics (2 hours): P4 Atomic Structure - Practice Questions (booklet pages 106-117)</p>
-                    <p class="font-medium text-sm mt-2 mb-1 text-gray-700">CognitoEdu Subtopics:</p>
-                    <a href="https://cognitoedu.org/lessons/p2-gcse-aqa-h-t/4.8-irradiation-contamination" target="_blank" class="cognito-link">4.8 - Irradiation & Contamination</a>
-                    <a href="https://cognitoedu.org/lessons/p2-gcse-aqa-h-t/4.9-medical-uses-of-radiation" target="_blank" class="cognito-link">4.9 - Medical Uses of Radiation</a>
-                    <a href="https://cognitoedu.org/lessons/p2-gcse-aqa-h-t/4.10-nuclear-fission-ht-only" target="_blank" class="cognito-link">4.10 - Nuclear Fission (HT Only)</a>
-                    <a href="https://cognitoedu.org/lessons/p2-gcse-aqa-h-t/4.11-nuclear-fusion-ht-only" target="_blank" class="cognito-link">4.11 - Nuclear Fusion (HT Only)</a>
-                </div>
-            </div>
-
-            <!-- Saturday, June 21, 2025 -->
-            <div class="day-card">
-                <h2 class="text-2xl font-bold text-gray-800 mb-4 pb-2 border-b-2 border-blue-200">Saturday, June 21, 2025</h2>
-                
-                <div class="subject-block subject-maths">
-                    <p class="subject-title">Maths (2 hours)</p>
-                    <ul class="activity-list">
-                        <li>Histograms</li>
-                        <li>Frequency Polygons</li>
-                        <li>Cumulative Frequency</li>
-                        <li>Box Plots</li>
-                        <li>Scatter Graphs</li>
-                        <li>Averages (Mean, Median, Mode)</li>
-                        <li>Range</li>
-                        <li>Interquartile Range</li>
-                        <li>Standard Deviation</li>
-                    </ul>
-                </div>
-
-                <div class="subject-block subject-chemistry">
-                    <p class="subject-title">Chemistry (2 hours): Catch-up / Mixed Practice for C4-C5 (using booklet practice questions and relevant CognitoEdu subtopics)</p>
-                    <p class="font-medium text-sm mt-2 mb-1 text-gray-700">CognitoEdu Link for All Chemistry Topics:</p>
-                    <a href="https://cognitoedu.org/course/c2-gcse-aqa-h-t" target="_blank" class="cognito-link">GCSE Chemistry AQA Higher Triple Course Overview</a>
-                </div>
-
-                <div class="subject-block subject-biology">
-                    <p class="subject-title">Biology (2 hours): Overall Biology Paper 1 Review (using your knowledge organisers, booklet, and all relevant CognitoEdu subtopics)</p>
-                    <p class="font-medium text-sm mt-2 mb-1 text-gray-700">CognitoEdu Link for All Biology Topics:</p>
-                    <a href="https://cognitoedu.org/course/b2-gcse-aqa-h-t" target="_blank" class="cognito-link">GCSE Biology AQA Higher Triple Course Overview</a>
-                </div>
-
-                <div class="subject-block subject-physics">
-                    <p class="subject-title">Physics (2 hours): Overall Physics Paper 1 Review (using your knowledge organisers, booklet, and all relevant CognitoEdu subtopics)</p>
-                    <p class="font-medium text-sm mt-2 mb-1 text-gray-700">CognitoEdu Link for All Physics Topics:</p>
-                    <a href="https://cognitoedu.org/course/p2-gcse-aqa-h-t" target="_blank" class="cognito-link">GCSE Physics AQA Higher Triple Course Overview</a>
-                </div>
-            </div>
-
-            <!-- Sunday, June 22, 2025 -->
-            <div class="day-card">
-                <h2 class="text-2xl font-bold text-gray-800 mb-4 pb-2 border-b-2 border-blue-200">Sunday, June 22, 2025</h2>
-                
-                <div class="subject-block subject-maths">
-                    <p class="subject-title">Maths (2 hours)</p>
-                    <ul class="activity-list">
-                        <li>Sampling</li>
-                        <li>Stratified Sampling</li>
-                        <li>Capture-Recapture</li>
-                        <li>Time Series</li>
-                        <li>Correlation</li>
-                        <li>Line of Best Fit</li>
-                        <li>Misleading Graphs</li>
-                        <li>Questionnaires</li>
-                        <li>Data Collection</li>
-                    </ul>
-                </div>
-
-                <div class="subject-block subject-chemistry">
-                    <p class="subject-title">Chemistry (2 hours): Overall Chemistry Paper 1 Review (using your knowledge organisers, booklet, and all relevant CognitoEdu subtopics)</p>
-                    <p class="font-medium text-sm mt-2 mb-1 text-gray-700">CognitoEdu Link for All Chemistry Topics:</p>
-                    <a href="https://cognitoedu.org/course/c2-gcse-aqa-h-t" target="_blank" class="cognito-link">GCSE Chemistry AQA Higher Triple Course Overview</a>
-                </div>
-
-                <div class="subject-block subject-biology">
-                    <p class="subject-title">Biology (2 hours): Overall Biology Paper 1 Review (continued)</p>
-                    <p class="font-medium text-sm mt-2 mb-1 text-gray-700">CognitoEdu Link for All Biology Topics:</p>
-                    <a href="https://cognitoedu.org/course/b2-gcse-aqa-h-t" target="_blank" class="cognito-link">GCSE Biology AQA Higher Triple Course Overview</a>
-                </div>
-
-                <div class="subject-block subject-physics">
-                    <p class="subject-title">Physics (2 hours): Overall Physics Paper 1 Review (continued)</p>
-                    <p class="font-medium text-sm mt-2 mb-1 text-gray-700">CognitoEdu Link for All Physics Topics:</p>
-                    <a href="https://cognitoedu.org/course/p2-gcse-aqa-h-t" target="_blank" class="cognito-link">GCSE Physics AQA Higher Triple Course Overview</a>
-                </div>
-            </div>
-
-            <!-- Monday, June 23, 2025 -->
-            <div class="day-card">
-                <h2 class="text-2xl font-bold text-gray-800 mb-4 pb-2 border-b-2 border-blue-200">Monday, June 23, 2025</h2>
-                
-                <div class="subject-block subject-maths">
-                    <p class="subject-title">Maths (2 hours): Final Maths Review / Exam Style Questions</p>
-                </div>
-
-                <div class="subject-block subject-chemistry">
-                    <p class="subject-title">Chemistry (2 hours): Final Chemistry Paper 1 Review / Exam Style Questions</p>
-                </div>
-
-                <div class="subject-block subject-biology">
-                    <p class="subject-title">Biology (2 hours): Final Biology Paper 1 Review / Exam Style Questions</p>
-                </div>
-
-                <div class="subject-block subject-physics">
-                    <p class="subject-title">Physics (2 hours): Final Physics Paper 1 Review / Exam Style Questions</p>
-                </div>
-            </div>
-
+        <div class="flex justify-center mb-6">
+            <button class="tab-button active" onclick="openTab(event, 'all-subjects-schedule')">All Subjects Schedule</button>
+            <button class="tab-button" onclick="openTab(event, 'geography-schedule')">Geography Schedule</button>
         </div>
 
-        <p class="text-gray-600 text-center mt-10 text-sm">
-            Remember to take short breaks within each 2-hour block and longer breaks between subjects to avoid burnout. This schedule is designed to be comprehensive; feel free to adjust it to best suit your personal learning style and needs.
-        </p>
-    </section>
-
-    <hr class="border-t-2 border-blue-200 my-16">
-
-    <!-- Section for Food Tests Infographic -->
-    <section id="food-tests-infographic" class="infographic-container hidden">
-        <header class="text-center mb-12">
-            <h1 class="text-4xl md:text-5xl font-bold text-[#004e92] mb-4">AQA GCSE Biology: Essential Food Tests</h1>
-            <p class="text-lg text-gray-600 mt-2">A clear guide to the required practicals for identifying biological molecules.</p>
-        </header>
-
-        <div class="bg-white rounded-lg shadow-lg p-6 mb-8 border-l-4 border-[#4286f4]">
-            <h2 class="text-2xl font-bold text-[#004e92] mb-2">Food Sample Preparation</h2>
-            <p class="text-gray-700">Before conducting any food test, prepare your sample. This ensures the reagents can mix effectively with the food substance.</p>
-            <div class="mt-4 flex flex-col md:flex-row gap-4 text-center">
-                <div class="flex-1 p-4 bg-blue-50 rounded-lg">
-                    <h3 class="font-semibold text-lg text-[#004e92]">Solid Food Samples</h3>
-                    <p class="text-gray-600 mt-1">Crush the solid food using a pestle and mortar, then mix thoroughly with distilled water to create a solution.</p>
-                </div>
-                <div class="flex-1 p-4 bg-green-50 rounded-lg">
-                    <h3 class="font-semibold text-lg text-green-800">Liquid Food Samples</h3>
-                    <p class="text-gray-600 mt-1">No preparation is needed; you can use the liquid directly for testing.</p>
-                </div>
-            </div>
-        </div>
-
-        <main class="grid grid-cols-1 gap-8">
-
-            <div class="bg-white rounded-lg shadow-md p-6 border-t-4 border-[#4286f4]">
-                <div class="step-heading">
-                    <div class="step-number">1</div>
-                    <h2 class="step-title">Testing for Starch</h2>
-                </div>
-                <p class="text-gray-700 mb-4">The Iodine test is used to detect the presence of starch, a complex carbohydrate.</p>
-                <div class="space-y-3">
-                    <p><strong class="text-[#004e92]">Reagent:</strong> Iodine solution (originally yellow-brown)</p>
-                    <p><strong class="text-[#004e92]">Procedure:</strong> Add a few drops of iodine solution directly to your food sample.</p>
-                    <div>
-                        <h4 class="font-semibold text-gray-800 mb-2">Expected Results:</h4>
-                        <div class="flex items-center gap-4 p-3 bg-red-50 rounded-lg">
-                            <span class="text-lg font-bold text-red-700">Negative</span>
-                            <div class="w-16 h-10 rounded bg-[#a0522d]"></div>
-                            <span class="text-gray-600">Remains yellow-brown</span>
-                        </div>
-                        <div class="flex items-center gap-4 p-3 bg-green-50 rounded-lg mt-2">
-                            <span class="text-lg font-bold text-green-700">Positive</span>
-                            <div class="w-16 h-10 rounded bg-[#000428]"></div>
-                            <span class="text-gray-600">Turns blue-black</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="bg-white rounded-lg shadow-md p-6 border-t-4 border-[#4286f4]">
-                 <div class="step-heading">
-                    <div class="step-number">2</div>
-                    <h2 class="step-title">Testing for Reducing Sugars</h2>
-                </div>
-                <p class="text-gray-700 mb-4">The Benedict's test identifies simple sugars like glucose and maltose. Heat is required for this reaction.</p>
-                <div class="chart-container">
-                    <canvas id="reducingSugarsChart"></canvas>
-                </div>
-                <p class="text-sm text-center text-gray-500 mt-2">The colour change from blue indicates the presence of reducing sugars. A brick-red precipitate signifies a high concentration.</p>
-            </div>
-
-            <div class="bg-white rounded-lg shadow-md p-6 border-t-4 border-[#4286f4]">
-                 <div class="step-heading">
-                    <div class="step-number">3</div>
-                    <h2 class="step-title">Testing for Proteins</h2>
-                </div>
-                <p class="text-gray-700 mb-4">The Biuret test is used to detect proteins by identifying peptide bonds. This test usually involves two solutions.</p>
-                <div class="space-y-3">
-                    <p><strong class="text-[#004e92]">Reagents:</strong> Biuret Reagent (Potassium Hydroxide/Sodium Hydroxide and Copper(II) Sulfate solution)</p>
-                    <p><strong class="text-[#004e92]">Procedure:</strong></p>
-                    <ol class="list-decimal list-inside text-gray-600 ml-4">
-                        <li>Add an equal volume of potassium hydroxide (or sodium hydroxide) solution to the food sample and shake.</li>
-                        <li>Then, add a few drops of dilute copper(II) sulfate solution and shake gently.</li>
-                    </ol>
-                    <div>
-                        <h4 class="font-semibold text-gray-800 mb-2">Expected Results:</h4>
-                        <div class="flex items-center gap-4 p-3 bg-red-50 rounded-lg">
-                            <span class="text-lg font-bold text-red-700">Negative</span>
-                            <div class="w-16 h-10 rounded bg-[#4286f4]"></div>
-                            <span class="text-gray-600">Remains blue</span>
-                        </div>
-                        <div class="flex items-center gap-4 p-3 bg-green-50 rounded-lg mt-2">
-                            <span class="text-lg font-bold text-green-700">Positive</span>
-                            <div class="w-16 h-10 rounded bg-[#8A2BE2]"></div>
-                            <span class="text-gray-600">Turns lilac/purple</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="bg-white rounded-lg shadow-md p-6 border-t-4 border-[#4286f4]">
-                 <div class="step-heading">
-                    <div class="step-number">4</div>
-                    <h2 class="step-title">Testing for Fats & Lipids</h2>
-                </div>
-                <p class="text-gray-700 mb-4">The Emulsion Test detects the presence of fats and oils (lipids) in a sample.</p>
-                 <div class="flex flex-col gap-6 mt-4">
-                    <div>
-                        <h3 class="font-semibold text-xl text-[#004e92] mb-3">Emulsion Test Procedure</h3>
-                        <ol class="list-decimal list-inside space-y-3 text-gray-600">
-                            <li>Add about 2 cm³ of ethanol to the food sample and shake thoroughly (to dissolve any lipids).</li>
-                            <li>Carefully pour this ethanol solution into a test tube containing about 2 cm³ of distilled water.</li>
-                        </ol>
-                    </div>
-                    <div class="flex gap-4 justify-center items-center text-center p-4 bg-gray-50 rounded-lg">
-                        <div>
-                           <h4 class="font-semibold text-gray-800">Negative</h4>
-                            <div class="w-20 h-32 border-2 border-gray-300 rounded-t-xl rounded-b-md mx-auto mt-2 flex items-end">
-                               <div class="w-full h-2/3 bg-[#4286f4] opacity-50 rounded-b-md"></div>
-                           </div>
-                           <p class="mt-2 text-sm text-gray-600">Solution remains clear</p>
-                        </div>
-                        <div>
-                           <h4 class="font-semibold text-gray-800">Positive</h4>
-                           <div class="w-20 h-32 border-2 border-gray-300 rounded-t-xl rounded-b-md mx-auto mt-2 flex items-end">
-                               <div class="w-full h-2/3 bg-white opacity-90 rounded-b-md shadow-inner"></div>
-                           </div>
-                           <p class="mt-2 text-sm text-gray-600">A cloudy white emulsion forms</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-        </main>
-
-        <footer class="text-center mt-12 py-6 border-t border-gray-200">
-            <p class="text-gray-500">Designed for AQA GCSE Biology students.</p>
-        </footer>
-    </section>
-
-    <hr class="border-t-2 border-blue-200 my-16">
-
-    <!-- Section for Enzymes in Digestion Infographic -->
-    <section id="enzymes-infographic" class="infographic-container hidden">
-        <header class="text-center mb-12">
-            <h1 class="text-4xl md:text-5xl font-bold text-[#004e92] mb-4">AQA GCSE Biology: Enzymes in Digestion</h1>
-            <p class="text-lg text-gray-600">A visual guide to the key digestive enzymes, their substrates, and where they act in the body.</p>
-        </header>
-
-        <section class="bg-white rounded-lg shadow-lg p-6 mb-8 border-l-4 border-[#004e92]">
-            <h2 class="text-2xl font-bold text-[#004e92] mb-4">Understanding Enzymes</h2>
-            <p class="text-gray-700 leading-relaxed">
-                Enzymes are biological catalysts, which means they speed up chemical reactions in living organisms without being used up themselves. In digestion, enzymes are crucial for breaking down large, insoluble food molecules into smaller, soluble molecules that can be absorbed into the bloodstream. Each enzyme is highly specific, only acting on a particular substrate, like a lock and key.
+        <!-- All Subjects Schedule Content -->
+        <div id="all-subjects-schedule" class="tab-content">
+            <p class="text-gray-600 text-center mb-10">
+                This schedule covers Maths, Chemistry, Biology, and Physics from June 5 to June 23, 2025.
             </p>
-        </section>
-
-        <div class="section-separator"></div>
-
-        <section class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
-            <div class="bg-white rounded-lg shadow-md p-6 border-t-4 border-[#4286f4]">
-                <h3 class="text-2xl font-bold text-[#004e92] mb-4">Amylase: Breaking Down Carbohydrates</h3>
-                <p class="text-gray-700 mb-4">
-                    Amylase is a carbohydrase, meaning it is responsible for breaking down carbohydrates. Specifically, it targets starch, a complex carbohydrate, and breaks it down into simpler sugars, primarily maltose.
-                </p>
-                <div class="bg-[#EBF5FF] p-4 rounded-lg text-center mb-4">
-                    <p class="font-bold text-lg text-[#004e92]">Starch <span class="text-2xl">⟶</span> Maltose</p>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- Thursday, June 5, 2025 -->
+                <div class="day-card">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-4 pb-2 border-b-2 border-blue-200">Thursday, June 5, 2025</h2>
+                    <div class="subject-block subject-maths">
+                        <p class="subject-title">Maths (2 hours)</p>
+                        <ul class="activity-list">
+                            <li>Adding Fractions</li>
+                            <li>Multiplying Fractions</li>
+                            <li>Dividing Fractions</li>
+                            <li>Reciprocals</li>
+                            <li>Arithmetic with Decimals</li>
+                            <li>Fractions, Decimals, Percentages</li>
+                            <li>Recurring Decimals</li>
+                            <li>Significant Figures</li>
+                            <li>Use of a Calculator</li>
+                        </ul>
+                    </div>
+                    <div class="subject-block subject-chemistry">
+                        <p class="subject-title">Chemistry (2 hours): C1 Atomic Structure and the Periodic Table - Review Knowledge Organiser</p>
+                        <p class="font-medium text-sm mt-2 mb-1 text-gray-700">CognitoEdu Subtopics:</p>
+                        <a href="https://cognitoedu.org/lessons/c2-gcse-aqa-h-t/1.1-atoms" target="_blank" class="cognito-link">1.1 - Atoms</a>
+                        <a href="https://cognitoedu.org/lessons/c2-gcse-aqa-h-t/1.2-elements-isotopes-relative-atomic-mass" target="_blank" class="cognito-link">1.2 - Elements, Isotopes & Relative Atomic Mass</a>
+                        <a href="https://cognitoedu.org/lessons/c2-gcse-aqa-h-t/1.3-compounds-molecules-mixtures" target="_blank" class="cognito-link">1.3 - Compounds, Molecules & Mixtures</a>
+                        <a href="https://cognitoedu.org/lessons/c2-gcse-aqa-h-t/1.4-balancing-chemical-equations" target="_blank" class="cognito-link">1.4 - Balancing Chemical Equations</a>
+                    </div>
+                    <div class="subject-block subject-biology">
+                        <p class="subject-title">Biology (2 hours): B1 Cell Biology - Review Knowledge Organiser</p>
+                        <p class="font-medium text-sm mt-2 mb-1 text-gray-700">CognitoEdu Subtopics:</p>
+                        <a href="https://cognitoedu.org/lessons/b2-gcse-aqa-h-t/1.1-eukaryotic-prokaryotic-cells" target="_blank" class="cognito-link">1.1 - Eukaryotic & Prokaryotic Cells</a>
+                        <a href="https://cognitoedu.org/lessons/b2-gcse-aqa-h-t/1.2-animal-plant-cells" target="_blank" class="cognito-link">1.2 - Animal & Plant Cells</a>
+                        <a href="https://cognitoedu.org/lessons/b2-gcse-aqa-h-t/1.3-specialised-cells" target="_blank" class="cognito-link">1.3 - Specialised Cells</a>
+                    </div>
+                    <div class="subject-block subject-physics">
+                        <p class="subject-title">Physics (2 hours): P1 Energy - Review Knowledge Organiser (booklet pages 2-8)</p>
+                        <p class="font-medium text-sm mt-2 mb-1 text-gray-700">CognitoEdu Subtopics:</p>
+                        <a href="https://cognitoedu.org/lessons/p2-gcse-aqa-h-t/1.1-energy-stores-and-systems" target="_blank" class="cognito-link">1.1 - Energy Stores and Systems</a>
+                        <a href="https://cognitoedu.org/lessons/p2-gcse-aqa-h-t/1.2-energy-transfers" target="_blank" class="cognito-link">1.2 - Energy Transfers</a>
+                        <a href="https://cognitoedu.org/lessons/p2-gcse-aqa-h-t/1.3-power" target="_blank" class="cognito-link">1.3 - Power</a>
+                    </div>
                 </div>
-                <h4 class="font-semibold text-xl text-[#004e92] mb-2">Where it's Found:</h4>
-                <ul class="list-disc list-inside text-gray-700">
-                    <li>Salivary glands (in the mouth)</li>
-                    <li>Pancreas</li>
-                    <li>Small intestine wall</li>
-                </ul>
+
+                <!-- Friday, June 6, 2025 -->
+                <div class="day-card">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-4 pb-2 border-b-2 border-blue-200">Friday, June 6, 2025</h2>
+                    <div class="subject-block subject-maths">
+                        <p class="subject-title">Maths (2 hours)</p>
+                        <ul class="activity-list">
+                            <li>Estimation</li>
+                            <li>Best Buys</li>
+                            <li>Currency</li>
+                            <li>Conversion Graphs</li>
+                            <li>Indices</li>
+                            <li>Laws of Indices</li>
+                            <li>Negative Indices</li>
+                            <li>Fractional Indices</li>
+                            <li>LCM</li>
+                        </ul>
+                    </div>
+                    <div class="subject-block subject-chemistry">
+                        <p class="subject-title">Chemistry (2 hours): C1 Atomic Structure and the Periodic Table - Practice Questions (Pages 8-12)</p>
+                        <p class="font-medium text-sm mt-2 mb-1 text-gray-700">CognitoEdu Subtopics:</p>
+                        <a href="https://cognitoedu.org/lessons/c2-gcse-aqa-h-t/1.5-filtration-crystallisation" target="_blank" class="cognito-link">1.5 - Filtration & Crystallisation</a>
+                        <a href="https://cognitoedu.org/lessons/c2-gcse-aqa-h-t/1.6-distillation" target="_blank" class="cognito-link">1.6 - Distillation</a>
+                        <a href="https://cognitoedu.org/lessons/c2-gcse-aqa-h-t/1.7-the-history-of-the-atom" target="_blank" class="cognito-link">1.7 - The History of the Atom</a>
+                        <a href="https://cognitoedu.org/lessons/c2-gcse-aqa-h-t/1.8-electronic-structure" target="_blank" class="cognito-link">1.8 - Electronic Structure</a>
+                    </div>
+                    <div class="subject-block subject-biology">
+                        <p class="subject-title">Biology (2 hours): B1 Cell Biology - Practice Questions (Pages 10-12)</p>
+                        <p class="font-medium text-sm mt-2 mb-1 text-gray-700">CognitoEdu Subtopics:</p>
+                        <a href="https://cognitoedu.org/lessons/b2-gcse-aqa-h-t/1.4-magnification-resolution" target="_blank" class="cognito-link">1.4 - Magnification & Resolution</a>
+                        <a href="https://cognitoedu.org/lessons/b2-gcse-aqa-h-t/1.5-cell-division-mitosis" target="_blank" class="cognito-link">1.5 - Cell Division & Mitosis</a>
+                        <a href="https://cognitoedu.org/lessons/b2-gcse-aqa-h-t/1.6-stem-cells" target="_blank" class="cognito-link">1.6 - Stem Cells</a>
+                    </div>
+                    <div class="subject-block subject-physics">
+                        <p class="subject-title">Physics (2 hours): P1 Energy - Review Knowledge Organiser (booklet pages 2-8)</p>
+                        <p class="font-medium text-sm mt-2 mb-1 text-gray-700">CognitoEdu Subtopics:</p>
+                        <a href="https://cognitoedu.org/lessons/p2-gcse-aqa-h-t/1.4-conservation-of-energy" target="_blank" class="cognito-link">1.4 - Conservation of Energy</a>
+                        <a href="https://cognitoedu.org/lessons/p2-gcse-aqa-h-t/1.5-work-done" target="_blank" class="cognito-link">1.5 - Work Done</a>
+                        <a href="https://cognitoedu.org/lessons/p2-gcse-aqa-h-t/1.6-energy-transfers-in-a-system" target="_blank" class="cognito-link">1.6 - Energy Transfers in a System</a>
+                    </div>
+                </div>
+
+                <!-- Saturday, June 7, 2025 -->
+                <div class="day-card">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-4 pb-2 border-b-2 border-blue-200">Saturday, June 7, 2025</h2>
+                    <div class="subject-block subject-maths">
+                        <p class="subject-title">Maths (2 hours)</p>
+                        <ul class="activity-list">
+                            <li>HCF</li>
+                            <li>Product of Primes</li>
+                            <li>Applying Product of Primes</li>
+                            <li>Product of Primes (LCM/HCF)</li>
+                            <li>Standard Form</li>
+                            <li>Expressing as a Percentage</li>
+                            <li>Percentage of Amounts</li>
+                            <li>Percentage Change</li>
+                            <li>Simple Interest</li>
+                        </ul>
+                    </div>
+                    <div class="subject-block subject-chemistry">
+                        <p class="subject-title">Chemistry (2 hours): C1 Atomic Structure and the Periodic Table - Practice Questions (Pages 13-18)</p>
+                        <p class="font-medium text-sm mt-2 mb-1 text-gray-700">CognitoEdu Subtopics:</p>
+                        <a href="https://cognitoedu.org/lessons/c2-gcse-aqa-h-t/1.9-development-of-the-periodic-table" target="_blank" class="cognito-link">1.9 - Development of the Periodic Table</a>
+                        <a href="https://cognitoedu.org/lessons/c2-gcse-aqa-h-t/1.10-metals-non-metals" target="_blank" class="cognito-link">1.10 - Metals & Non-metals</a>
+                        <a href="https://cognitoedu.org/lessons/c2-gcse-aqa-h-t/1.11-group-1-alkali-metals" target="_blank" class="cognito-link">1.11 - Group 1 (Alkali Metals)</a>
+                        <a href="https://cognitoedu.org/lessons/c2-gcse-aqa-h-t/1.12-group-7-group-0-halogens-noble-gases" target="_blank" class="cognito-link">1.12 - Group 7 & Group 0 (Halogens & Noble Gases)</a>
+                    </div>
+                    <div class="subject-block subject-biology">
+                        <p class="subject-title">Biology (2 hours): B1 Cell Biology - Practice Questions (Pages 13-17)</p>
+                        <p class="font-medium text-sm mt-2 mb-1 text-gray-700">CognitoEdu Subtopics:</p>
+                        <a href="https://cognitoedu.org/lessons/b2-gcse-aqa-h-t/1.7-diffusion" target="_blank" class="cognito-link">1.7 - Diffusion</a>
+                        <a href="https://cognitoedu.org/lessons/b2-gcse-aqa-h-t/1.8-osmosis" target="_blank" class="cognito-link">1.8 - Osmosis</a>
+                        <a href="https://cognitoedu.org/lessons/b2-gcse-aqa-h-t/1.9-active-transport" target="_blank" class="cognito-link">1.9 - Active Transport</a>
+                        <a href="https://cognitoedu.org/lessons/b2-gcse-aqa-h-t/1.10-exchange-surfaces" target="_blank" class="cognito-link">1.10 - Exchange Surfaces</a>
+                    </div>
+                    <div class="subject-block subject-physics">
+                        <p class="subject-title">Physics (2 hours): P1 Energy - Practice Questions (booklet pages 13-20)</p>
+                        <p class="font-medium text-sm mt-2 mb-1 text-gray-700">CognitoEdu Subtopics:</p>
+                        <a href="https://cognitoedu.org/lessons/p2-gcse-aqa-h-t/1.7-specific-heat-capacity" target="_blank" class="cognito-link">1.7 - Specific Heat Capacity</a>
+                        <a href="https://cognitoedu.org/lessons/p2-gcse-aqa-h-t/1.8-energy-efficiency" target="_blank" class="cognito-link">1.8 - Energy Efficiency</a>
+                    </div>
+                </div>
+
+                <!-- Sunday, June 8, 2025 -->
+                <div class="day-card">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-4 pb-2 border-b-2 border-blue-200">Sunday, June 8, 2025</h2>
+                    <div class="subject-block subject-maths">
+                        <p class="subject-title">Maths (2 hours)</p>
+                        <ul class="activity-list">
+                            <li>Compound Interest</li>
+                            <li>Reverse Percentages</li>
+                            <li>Growth and Decay</li>
+                            <li>Fractions of an Amount</li>
+                            <li>Expressing as a Fraction</li>
+                            <li>Area of a Trapezium</li>
+                            <li>Area of a Circle</li>
+                            <li>Circumference of a Circle</li>
+                            <li>Perimeter of a Semicircle</li>
+                        </ul>
+                    </div>
+                    <div class="subject-block subject-chemistry">
+                        <p class="subject-title">Chemistry (2 hours): C2 Bonding, Structure and Properties of Matter - Review Knowledge Organiser</p>
+                        <p class="font-medium text-sm mt-2 mb-1 text-gray-700">CognitoEdu Subtopics:</p>
+                        <a href="https://cognitoedu.org/lessons/c2-gcse-aqa-h-t/2.1-states-of-matter" target="_blank" class="cognito-link">2.1 - States of Matter</a>
+                        <a href="https://cognitoedu.org/lessons/c2-gcse-aqa-h-t/2.2-pure-impure-substances" target="_blank" class="cognito-link">2.2 - Pure & Impure Substances</a>
+                        <a href="https://cognitoedu.org/lessons/c2-gcse-aqa-h-t/2.3-ionic-bonding" target="_blank" class="cognito-link">2.3 - Ionic Bonding</a>
+                        <a href="https://cognitoedu.org/lessons/c2-gcse-aqa-h-t/2.4-ionic-compounds" target="_blank" class="cognito-link">2.4 - Ionic Compounds</a>
+                    </div>
+                    <div class="subject-block subject-biology">
+                        <p class="subject-title">Biology (2 hours): B2 Organisation - Review Knowledge Organiser</p>
+                        <p class="font-medium text-sm mt-2 mb-1 text-gray-700">CognitoEdu Subtopics:</p>
+                        <a href="https://cognitoedu.org/lessons/b2-gcse-aqa-h-t/2.1-organisation" target="_blank" class="cognito-link">2.1 - Organisation</a>
+                        <a href="https://cognitoedu.org/lessons/b2-gcse-aqa-h-t/2.2-the-digestive-system" target="_blank" class="cognito-link">2.2 - The Digestive System</a>
+                        <a href="https://cognitoedu.org/lessons/b2-gcse-aqa-h-t/2.3-enzymes" target="_blank" class="cognito-link">2.3 - Enzymes</a>
+                    </div>
+                    <div class="subject-block subject-physics">
+                        <p class="subject-title">Physics (2 hours): P1 Energy - Practice Questions (booklet pages 21-30)</p>
+                        <p class="font-medium text-sm mt-2 mb-1 text-gray-700">CognitoEdu Subtopics:</p>
+                        <a href="https://cognitoedu.org/lessons/p2-gcse-aqa-h-t/1.9-energy-resources" target="_blank" class="cognito-link">1.9 - Energy Resources</a>
+                        <a href="https://cognitoedu.org/lessons/p2-gcse-aqa-h-t/1.10-non-renewable-renewable-resources" target="_blank" class="cognito-link">1.10 - Non-Renewable & Renewable Resources</a>
+                    </div>
+                </div>
+
+                <!-- Monday, June 9, 2025 -->
+                <div class="day-card">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-4 pb-2 border-b-2 border-blue-200">Monday, June 9, 2025</h2>
+                    <div class="subject-block subject-maths">
+                        <p class="subject-title">Maths (2 hours)</p>
+                        <ul class="activity-list">
+                            <li>Area of a Sector</li>
+                            <li>Volume of a Prism</li>
+                            <li>Volume of a Cylinder</li>
+                            <li>Volume of a Cone</li>
+                            <li>Volume of a Sphere</li>
+                            <li>Surface Area of a Cylinder</li>
+                            <li>Surface Area of a Cone</li>
+                            <li>Surface Area of a Sphere</li>
+                            <li>Density</li>
+                        </ul>
+                    </div>
+                    <div class="subject-block subject-chemistry">
+                        <p class="subject-title">Chemistry (2 hours): C2 Bonding, Structure and Properties of Matter - Practice Questions (Pages 30-43)</p>
+                        <p class="font-medium text-sm mt-2 mb-1 text-gray-700">CognitoEdu Subtopics:</p>
+                        <a href="https://cognitoedu.org/lessons/c2-gcse-aqa-h-t/2.5-covalent-bonding" target="_blank" class="cognito-link">2.5 - Covalent Bonding</a>
+                        <a href="https://cognitoedu.org/lessons/c2-gcse-aqa-h-t/2.6-simple-covalent-structures" target="_blank" class="cognito-link">2.6 - Simple Covalent Structures</a>
+                        <a href="https://cognitoedu.org/lessons/c2-gcse-aqa-h-t/2.7-giant-covalent-structures" target="_blank" class="cognito-link">2.7 - Giant Covalent Structures</a>
+                    </div>
+                    <div class="subject-block subject-biology">
+                        <p class="subject-title">Biology (2 hours): B2 Organisation - Practice Questions (Pages 28-30)</p>
+                        <p class="font-medium text-sm mt-2 mb-1 text-gray-700">CognitoEdu Subtopics:</p>
+                        <a href="https://cognitoedu.org/lessons/b2-gcse-aqa-h-t/2.4-the-heart" target="_blank" class="cognito-link">2.4 - The Heart</a>
+                        <a href="https://cognitoedu.org/lessons/b2-gcse-aqa-h-t/2.5-blood-vessels" target="_blank" class="cognito-link">2.5 - Blood Vessels</a>
+                        <a href="https://cognitoedu.org/lessons/b2-gcse-aqa-h-t/2.6-blood" target="_blank" class="cognito-link">2.6 - Blood</a>
+                    </div>
+                    <div class="subject-block subject-physics">
+                        <p class="subject-title">Physics (2 hours): P2 Electricity - Review Knowledge Organiser (booklet pages 37-43)</p>
+                        <p class="font-medium text-sm mt-2 mb-1 text-gray-700">CognitoEdu Subtopics:</p>
+                        <a href="https://cognitoedu.org/lessons/p2-gcse-aqa-h-t/2.1-circuit-diagrams" target="_blank" class="cognito-link">2.1 - Circuit Diagrams</a>
+                        <a href="https://cognitoedu.org/lessons/p2-gcse-aqa-h-t/2.2-current-voltage" target="_blank" class="cognito-link">2.2 - Current & Voltage</a>
+                        <a href="https://cognitoedu.org/lessons/p2-gcse-aqa-h-t/2.3-resistance" target="_blank" class="cognito-link">2.3 - Resistance</a>
+                    </div>
+                </div>
+
+                <!-- Tuesday, June 10, 2025 -->
+                <div class="day-card">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-4 pb-2 border-b-2 border-blue-200">Tuesday, June 10, 2025</h2>
+                    <div class="subject-block subject-maths">
+                        <p class="subject-title">Maths (2 hours)</p>
+                        <ul class="activity-list">
+                            <li>Pressure</li>
+                            <li>Error Intervals</li>
+                            <li>Limits of Accuracy</li>
+                            <li>Rounding</li>
+                            <li>Types of Number</li>
+                            <li>Factors</li>
+                            <li>Multiples</li>
+                            <li>Primes</li>
+                            <li>Prime Factor Trees</li>
+                            <li>Square and Cube Numbers</li>
+                            <li>Roots</li>
+                        </ul>
+                    </div>
+                    <div class="subject-block subject-chemistry">
+                        <p class="subject-title">Chemistry (2 hours): C2 Bonding, Structure and Properties of Matter - Practice Questions (Pages 44-57)</p>
+                        <p class="font-medium text-sm mt-2 mb-1 text-gray-700">CognitoEdu Subtopics:</p>
+                        <a href="https://cognitoedu.org/lessons/c2-gcse-aqa-h-t/2.8-metallic-bonding" target="_blank" class="cognito-link">2.8 - Metallic Bonding</a>
+                        <a href="https://cognitoedu.org/lessons/c2-gcse-aqa-h-t/2.9-alloys" target="_blank" class="cognito-link">2.9 - Alloys</a>
+                        <a href="https://cognitoedu.org/lessons/c2-gcse-aqa-h-t/2.10-polymers" target="_blank" class="cognito-link">2.10 - Polymers</a>
+                        <a href="https://cognitoedu.org/lessons/c2-gcse-aqa-h-t/2.11-nanoscience" target="_blank" class="cognito-link">2.11 - Nanoscience</a>
+                    </div>
+                    <div class="subject-block subject-biology">
+                        <p class="subject-title">Biology (2 hours): B2 Organisation - Practice Questions (Pages 31-36)</p>
+                        <p class="font-medium text-sm mt-2 mb-1 text-gray-700">CognitoEdu Subtopics:</p>
+                        <a href="https://cognitoedu.org/lessons/b2-gcse-aqa-h-t/2.7-non-communicable-diseases" target="_blank" class="cognito-link">2.7 - Non-communicable Diseases</a>
+                        <a href="https://cognitoedu.org/lessons/b2-gcse-aqa-h-t/2.8-plant-tissues" target="_blank" class="cognito-link">2.8 - Plant Tissues</a>
+                        <a href="https://cognitoedu.org/lessons/b2-gcse-aqa-h-t/2.9-transpiration" target="_blank" class="cognito-link">2.9 - Transpiration</a>
+                    </div>
+                    <div class="subject-block subject-physics">
+                        <p class="subject-title">Physics (2 hours): P2 Electricity - Review Knowledge Organiser (booklet pages 37-43)</p>
+                        <p class="font-medium text-sm mt-2 mb-1 text-gray-700">CognitoEdu Subtopics:</p>
+                        <a href="https://cognitoedu.org/lessons/p2-gcse-aqa-h-t/2.4-ohms-law" target="_blank" class="cognito-link">2.4 - Ohm's Law</a>
+                        <a href="https://cognitoedu.org/lessons/p2-gcse-aqa-h-t/2.5-resistors-in-series" target="_blank" class="cognito-link">2.5 - Resistors in Series</a>
+                        <a href="https://cognitoedu.org/lessons/p2-gcse-aqa-h-t/2.6-resistors-in-parallel" target="_blank" class="cognito-link">2.6 - Resistors in Parallel</a>
+                    </div>
+                </div>
+
+                <!-- Wednesday, June 11, 2025 -->
+                <div class="day-card">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-4 pb-2 border-b-2 border-blue-200">Wednesday, June 11, 2025</h2>
+                    <div class="subject-block subject-maths">
+                        <p class="subject-title">Maths (2 hours)</p>
+                        <ul class="activity-list">
+                            <li>Reciprocals</li>
+                            <li>Powers of 10</li>
+                            <li>Order of Operations</li>
+                            <li>Algebraic Notation</li>
+                            <li>Collecting Like Terms</li>
+                            <li>Expanding Brackets</li>
+                            <li>Factorising</li>
+                            <li>Solving Equations</li>
+                            <li>Forming Equations</li>
+                        </ul>
+                    </div>
+                    <div class="subject-block subject-chemistry">
+                        <p class="subject-title">Chemistry (2 hours): C3 Quantitative Chemistry - Review Knowledge Organiser</p>
+                        <p class="font-medium text-sm mt-2 mb-1 text-gray-700">CognitoEdu Subtopics:</p>
+                        <a href="https://cognitoedu.org/lessons/c2-gcse-aqa-h-t/3.1-relative-formula-mass" target="_blank" class="cognito-link">3.1 - Relative Formula Mass</a>
+                        <a href="https://cognitoedu.org/lessons/c2-gcse-aqa-h-t/3.2-moles-mass" target="_blank" class="cognito-link">3.2 - Moles & Mass</a>
+                        <a href="https://cognitoedu.org/lessons/c2-gcse-aqa-h-t/3.3-calculating-mass-in-reactions" target="_blank" class="cognito-link">3.3 - Calculating Mass in Reactions</a>
+                    </div>
+                    <div class="subject-block subject-biology">
+                        <p class="subject-title">Biology (2 hours): B3 Infection & Response - Review Knowledge Organiser</p>
+                        <p class="font-medium text-sm mt-2 mb-1 text-gray-700">CognitoEdu Subtopics:</p>
+                        <a href="https://cognitoedu.org/lessons/b2-gcse-aqa-h-t/3.1-pathogens" target="_blank" class="cognito-link">3.1 - Pathogens</a>
+                        <a href="https://cognitoedu.org/lessons/b2-gcse-aqa-h-t/3.2-viral-diseases" target="_blank" class="cognito-link">3.2 - Viral Diseases</a>
+                        <a href="https://cognitoedu.org/lessons/b2-gcse-aqa-h-t/3.3-bacterial-diseases" target="_blank" class="cognito-link">3.3 - Bacterial Diseases</a>
+                    </div>
+                    <div class="subject-block subject-physics">
+                        <p class="subject-title">Physics (2 hours): P2 Electricity - Practice Questions (booklet pages 44-55)</p>
+                        <p class="font-medium text-sm mt-2 mb-1 text-gray-700">CognitoEdu Subtopics:</p>
+                        <a href="https://cognitoedu.org/lessons/p2-gcse-aqa-h-t/2.7-ldrs-thermistors" target="_blank" class="cognito-link">2.7 - LDRs & Thermistors</a>
+                        <a href="https://cognitoedu.org/lessons/p2-gcse-aqa-h-t/2.8-electrical-power" target="_blank" class="cognito-link">2.8 - Electrical Power</a>
+                    </div>
+                </div>
+
+                <!-- Thursday, June 12, 2025 -->
+                <div class="day-card">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-4 pb-2 border-b-2 border-blue-200">Thursday, June 12, 2025</h2>
+                    <div class="subject-block subject-maths">
+                        <p class="subject-title">Maths (2 hours)</p>
+                        <ul class="activity-list">
+                            <li>Inequalities</li>
+                            <li>Changing the Subject</li>
+                            <li>Substitution</li>
+                            <li>Sequences</li>
+                            <li>Nth Term</li>
+                            <li>Quadratic Sequences</li>
+                            <li>Coordinates</li>
+                            <li>Straight Line Graphs</li>
+                            <li>Gradient</li>
+                        </ul>
+                    </div>
+                    <div class="subject-block subject-chemistry">
+                        <p class="subject-title">Chemistry (2 hours): C3 Quantitative Chemistry - Practice Questions (Pages 62-75)</p>
+                        <p class="font-medium text-sm mt-2 mb-1 text-gray-700">CognitoEdu Subtopics:</p>
+                        <a href="https://cognitoedu.org/lessons/c2-gcse-aqa-h-t/3.4-conservation-of-mass" target="_blank" class="cognito-link">3.4 - Conservation of Mass</a>
+                        <a href="https://cognitoedu.org/lessons/c2-gcse-aqa-h-t/3.5-limiting-reactants" target="_blank" class="cognito-link">3.5 - Limiting Reactants</a>
+                        <a href="https://cognitoedu.org/lessons/c2-gcse-aqa-h-t/3.6-concentration-calculations-grams-dm3" target="_blank" class="cognito-link">3.6 - Concentration Calculations (grams/dm^3)</a>
+                    </div>
+                    <div class="subject-block subject-biology">
+                        <p class="subject-title">Biology (2 hours): B3 Infection & Response - Practice Questions (Pages 40-42)</p>
+                        <p class="font-medium text-sm mt-2 mb-1 text-gray-700">CognitoEdu Subtopics:</p>
+                        <a href="https://cognitoedu.org/lessons/b2-gcse-aqa-h-t/3.4-fungal-protist-diseases" target="_blank" class="cognito-link">3.4 - Fungal & Protist Diseases</a>
+                        <a href="https://cognitoedu.org/lessons/b2-gcse-aqa-h-t/3.5-defence-systems" target="_blank" class="cognito-link">3.5 - Defence Systems</a>
+                        <a href="https://cognitoedu.org/lessons/b2-gcse-aqa-h-t/3.6-vaccination" target="_blank" class="cognito-link">3.6 - Vaccination</a>
+                    </div>
+                    <div class="subject-block subject-physics">
+                        <p class="subject-title">Physics (2 hours): P2 Electricity - Review Knowledge Organiser (booklet pages 37-43)</p>
+                        <p class="font-medium text-sm mt-2 mb-1 text-gray-700">CognitoEdu Subtopics:</p>
+                        <a href="https://cognitoedu.org/lessons/p2-gcse-aqa-h-t/2.9-energy-transfer-in-circuits" target="_blank" class="cognito-link">2.9 - Energy Transfer in Circuits</a>
+                        <a href="https://cognitoedu.org/lessons/p2-gcse-aqa-h-t/2.10-mains-electricity" target="_blank" class="cognito-link">2.10 - Mains Electricity</a>
+                        <a href="https://cognitoedu.org/lessons/p2-gcse-aqa-h-t/2.11-power-in-circuits" target="_blank" class="cognito-link">2.11 - Power in Circuits</a>
+                    </div>
+                </div>
+
+                <!-- Friday, June 13, 2025 -->
+                <div class="day-card">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-4 pb-2 border-b-2 border-blue-200">Friday, June 13, 2025</h2>
+                    <div class="subject-block subject-maths">
+                        <p class="subject-title">Maths (2 hours)</p>
+                        <ul class="activity-list">
+                            <li>Parallel and Perpendicular Lines</li>
+                            <li>Real-Life Graphs</li>
+                            <li>Quadratic Graphs</li>
+                            <li>Cubic Graphs</li>
+                            <li>Reciprocal Graphs</li>
+                            <li>Exponential Graphs</li>
+                            <li>Trigonometric Graphs</li>
+                            <li>Solving Equations Graphically</li>
+                            <li>Sketching Graphs</li>
+                        </ul>
+                    </div>
+                    <div class="subject-block subject-chemistry">
+                        <p class="subject-title">Chemistry (2 hours): C3 Quantitative Chemistry - Practice Questions (Pages 76-88)</p>
+                        <p class="font-medium text-sm mt-2 mb-1 text-gray-700">CognitoEdu Subtopics:</p>
+                        <a href="https://cognitoedu.org/lessons/c2-gcse-aqa-h-t/3.7-gas-calculations" target="_blank" class="cognito-link">3.7 - Gas Calculations</a>
+                        <a href="https://cognitoedu.org/lessons/c2-gcse-aqa-h-t/3.8-atom-economy" target="_blank" class="cognito-link">3.8 - Atom Economy</a>
+                        <a href="https://cognitoedu.org/lessons/c2-gcse-aqa-h-t/3.9-percentage-yield" target="_blank" class="cognito-link">3.9 - Percentage Yield</a>
+                    </div>
+                    <div class="subject-block subject-biology">
+                        <p class="subject-title">Biology (2 hours): B3 Infection & Response - Practice Questions (Pages 43-48)</p>
+                        <p class="font-medium text-sm mt-2 mb-1 text-gray-700">CognitoEdu Subtopics:</p>
+                        <a href="https://cognitoedu.org/lessons/b2-gcse-aqa-h-t/3.7-antibiotics" target="_blank" class="cognito-link">3.7 - Antibiotics</a>
+                        <a href="https://cognitoedu.org/lessons/b2-gcse-aqa-h-t/3.8-drug-development" target="_blank" class="cognito-link">3.8 - Drug Development</a>
+                        <a href="https://cognitoedu.org/lessons/b2-gcse-aqa-h-t/3.9-monoclonal-antibodies-triple-only" target="_blank" class="cognito-link">3.9 - Monoclonal Antibodies (Triple Only)</a>
+                        <a href="https://cognitoedu.org/lessons/b2-gcse-aqa-h-t/3.10-plant-diseases-defences-triple-only" target="_blank" class="cognito-link">3.10 - Plant Diseases & Defences (Triple Only)</a>
+                    </div>
+                    <div class="subject-block subject-physics">
+                        <p class="subject-title">Physics (2 hours): P2 Electricity - Practice Questions (booklet pages 56-70)</p>
+                        <p class="font-medium text-sm mt-2 mb-1 text-gray-700">CognitoEdu Subtopics:</p>
+                        <a href="https://cognitoedu.org/lessons/p2-gcse-aqa-h-t/2.12-domestic-electricity" target="_blank" class="cognito-link">2.12 - Domestic Electricity</a>
+                        <a href="https://cognitoedu.org/lessons/p2-gcse-aqa-h-t/2.13-national-grid" target="_blank" class="cognito-link">2.13 - National Grid</a>
+                    </div>
+                </div>
+
+                <!-- Saturday, June 14, 2025 -->
+                <div class="day-card">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-4 pb-2 border-b-2 border-blue-200">Saturday, June 14, 2025</h2>
+                    <div class="subject-block subject-maths">
+                        <p class="subject-title">Maths (2 hours)</p>
+                        <ul class="activity-list">
+                            <li>Transformations of Graphs</li>
+                            <li>Solving Quadratic Equations</li>
+                            <li>Completing the Square</li>
+                            <li>The Quadratic Formula</li>
+                            <li>Simultaneous Equations</li>
+                            <li>Linear and Quadratic Simultaneous Equations</li>
+                            <li>Factorising Quadratics</li>
+                            <li>Algebraic Fractions</li>
+                            <li>Functions</li>
+                        </ul>
+                    </div>
+                    <div class="subject-block subject-chemistry">
+                        <p class="subject-title">Chemistry (2 hours): C4 Chemical Changes - Review Knowledge Organiser</p>
+                        <p class="font-medium text-sm mt-2 mb-1 text-gray-700">CognitoEdu Subtopics:</p>
+                        <a href="https://cognitoedu.org/lessons/c2-gcse-aqa-h-t/4.1-acids-bases" target="_blank" class="cognito-link">4.1 - Acids & Bases</a>
+                        <a href="https://cognitoedu.org/lessons/c2-gcse-aqa-h-t/4.2-titration-practical" target="_blank" class="cognito-link">4.2 - Titration Practical</a>
+                        <a href="https://cognitoedu.org/lessons/c2-gcse-aqa-h-t/4.3-strong-acids-weak-acids" target="_blank" class="cognito-link">4.3 - Strong Acids & Weak Acids</a>
+                    </div>
+                    <div class="subject-block subject-biology">
+                        <p class="subject-title">Biology (2 hours): B4 Bioenergetics - Review Knowledge Organiser</p>
+                        <p class="font-medium text-sm mt-2 mb-1 text-gray-700">CognitoEdu Subtopics:</p>
+                        <a href="https://cognitoedu.org/lessons/b2-gcse-aqa-h-t/4.1-photosynthesis" target="_blank" class="cognito-link">4.1 - Photosynthesis</a>
+                        <a href="https://cognitoedu.org/lessons/b2-gcse-aqa-h-t/4.2-limiting-factors-of-photosynthesis" target="_blank" class="cognito-link">4.2 - Limiting Factors of Photosynthesis</a>
+                    </div>
+                    <div class="subject-block subject-physics">
+                        <p class="subject-title">Physics (2 hours): P3 Particle Model of Matter - Review Knowledge Organiser (booklet pages 71-76)</p>
+                        <p class="font-medium text-sm mt-2 mb-1 text-gray-700">CognitoEdu Subtopics:</p>
+                        <a href="https://cognitoedu.org/lessons/p2-gcse-aqa-h-t/3.1-states-of-matter" target="_blank" class="cognito-link">3.1 - States of Matter</a>
+                        <a href="https://cognitoedu.org/lessons/p2-gcse-aqa-h-t/3.2-density" target="_blank" class="cognito-link">3.2 - Density</a>
+                    </div>
+                </div>
+
+                <!-- Sunday, June 15, 2025 -->
+                <div class="day-card">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-4 pb-2 border-b-2 border-blue-200">Sunday, June 15, 2025</h2>
+                    <div class="subject-block subject-maths">
+                        <p class="subject-title">Maths (2 hours)</p>
+                        <ul class="activity-list">
+                            <li>Inverse Functions</li>
+                            <li>Composite Functions</li>
+                            <li>Proof</li>
+                            <li>Circles</li>
+                            <li>Circle Theorems</li>
+                            <li>Vectors</li>
+                            <li>Vectors (Geometry)</li>
+                            <li>Geometric Proof</li>
+                            <li>Ratio</li>
+                        </ul>
+                    </div>
+                    <div class="subject-block subject-chemistry">
+                        <p class="subject-title">Chemistry (2 hours): C4 Chemical Changes - Practice Questions (Pages 92-105)</p>
+                        <p class="font-medium text-sm mt-2 mb-1 text-gray-700">CognitoEdu Subtopics:</p>
+                        <a href="https://cognitoedu.org/lessons/c2-gcse-aqa-h-t/4.4-neutralisation-reactions" target="_blank" class="cognito-link">4.4 - Neutralisation Reactions</a>
+                        <a href="https://cognitoedu.org/lessons/c2-gcse-aqa-h-t/4.5-the-reactivity-series-displacement-reactions" target="_blank" class="cognito-link">4.5 - The Reactivity Series & Displacement Reactions</a>
+                        <a href="https://cognitoedu.org/lessons/c2-gcse-aqa-h-t/4.6-separating-metals-from-metal-oxides" target="_blank" class="cognito-link">4.6 - Separating Metals from Metal Oxides</a>
+                    </div>
+                    <div class="subject-block subject-biology">
+                        <p class="subject-title">Biology (2 hours): B4 Bioenergetics - Practice Questions (Pages 53-55)</p>
+                        <p class="font-medium text-sm mt-2 mb-1 text-gray-700">CognitoEdu Subtopics:</p>
+                        <a href="https://cognitoedu.org/lessons/b2-gcse-aqa-h-t/4.3-respiration" target="_blank" class="cognito-link">4.3 - Respiration</a>
+                        <a href="https://cognitoedu.org/lessons/b2-gcse-aqa-h-t/4.4-aerobic-respiration" target="_blank" class="cognito-link">4.4 - Aerobic Respiration</a>
+                        <a href="https://cognitoedu.org/lessons/b2-gcse-aqa-h-t/4.5-anaerobic-respiration" target="_blank" class="cognito-link">4.5 - Anaerobic Respiration</a>
+                    </div>
+                    <div class="subject-block subject-physics">
+                        <p class="subject-title">Physics (2 hours): P3 Particle Model of Matter - Review Knowledge Organiser (booklet pages 71-76)</p>
+                        <p class="font-medium text-sm mt-2 mb-1 text-gray-700">CognitoEdu Subtopics:</p>
+                        <a href="https://cognitoedu.org/lessons/p2-gcse-aqa-h-t/3.3-internal-energy-heat-capacity" target="_blank" class="cognito-link">3.3 - Internal Energy & Heat Capacity</a>
+                        <a href="https://cognitoedu.org/lessons/p2-gcse-aqa-h-t/3.4-changes-of-state" target="_blank" class="cognito-link">3.4 - Changes of State</a>
+                    </div>
+                </div>
+
+                <!-- Monday, June 16, 2025 -->
+                <div class="day-card">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-4 pb-2 border-b-2 border-blue-200">Monday, June 16, 2025</h2>
+                    <div class="subject-block subject-maths">
+                        <p class="subject-title">Maths (2 hours)</p>
+                        <ul class="activity-list">
+                            <li>Proportion</li>
+                            <li>Direct and Inverse Proportion</li>
+                            <li>Direct and Inverse Proportion (Graphs)</li>
+                            <li>Direct and Inverse Proportion (Equations)</li>
+                            <li>Similarity</li>
+                            <li>Congruence</li>
+                            <li>Area and Volume of Similar Shapes</li>
+                            <li>Scale Drawings</li>
+                            <li>Bearings</li>
+                        </ul>
+                    </div>
+                    <div class="subject-block subject-chemistry">
+                        <p class="subject-title">Chemistry (2 hours): C4 Chemical Changes - Practice Questions (Pages 106-118)</p>
+                        <p class="font-medium text-sm mt-2 mb-1 text-gray-700">CognitoEdu Subtopics:</p>
+                        <a href="https://cognitoedu.org/lessons/c2-gcse-aqa-h-t/4.7-redox-reactions" target="_blank" class="cognito-link">4.7 - Redox Reactions</a>
+                        <a href="https://cognitoedu.org/lessons/c2-gcse-aqa-h-t/4.8-electrolysis-1-introduction" target="_blank" class="cognito-link">4.8 - Electrolysis 1 - Introduction</a>
+                        <a href="https://cognitoedu.org/lessons/c2-gcse-aqa-h-t/4.9-electrolysis-2-aluminium-oxide" target="_blank" class="cognito-link">4.9 - Electrolysis 2 - Aluminium Oxide</a>
+                        <a href="https://cognitoedu.org/lessons/c2-gcse-aqa-h-t/4.10-electrolysis-3-aqueous-solutions" target="_blank" class="cognito-link">4.10 - Electrolysis 3 - Aqueous Solutions</a>
+                    </div>
+                    <div class="subject-block subject-biology">
+                        <p class="subject-title">Biology (2 hours): B4 Bioenergetics - Practice Questions (Pages 56-59)</p>
+                        <p class="font-medium text-sm mt-2 mb-1 text-gray-700">CognitoEdu Subtopics:</p>
+                        <a href="https://cognitoedu.org/lessons/b2-gcse-aqa-h-t/4.6-metabolism" target="_blank" class="cognito-link">4.6 - Metabolism</a>
+                        <a href="https://cognitoedu.org/lessons/b2-gcse-aqa-h-t/4.7-required-practicals" target="_blank" class="cognito-link">4.7 - Required Practicals</a> (This links to the practicals section, which covers RP6 for Bioenergetics)
+                    </div>
+                    <div class="subject-block subject-physics">
+                        <p class="subject-title">Physics (2 hours): P3 Particle Model of Matter - Practice Questions (booklet pages 72-89)</p>
+                        <p class="font-medium text-sm mt-2 mb-1 text-gray-700">CognitoEdu Subtopics:</p>
+                        <a href="https://cognitoedu.org/lessons/p2-gcse-aqa-h-t/3.5-gas-pressure" target="_blank" class="cognito-link">3.5 - Gas Pressure</a>
+                        <a href="https://cognitoedu.org/lessons/p2-gcse-aqa-h-t/3.6-gas-pressure-volume" target="_blank" class="cognito-link">3.6 - Gas Pressure & Volume</a>
+                        <a href="https://cognitoedu.org/lessons/p2-gcse-aqa-h-t/3.7-specific-latent-heat" target="_blank" class="cognito-link">3.7 - Specific Latent Heat</a>
+                    </div>
+                </div>
+
+                <!-- Tuesday, June 17, 2025 -->
+                <div class="day-card">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-4 pb-2 border-b-2 border-blue-200">Tuesday, June 17, 2025</h2>
+                    <div class="subject-block subject-maths">
+                        <p class="subject-title">Maths (2 hours)</p>
+                        <ul class="activity-list">
+                            <li>Angles</li>
+                            <li>Angles in Parallel Lines</li>
+                            <li>Angles in Polygons</li>
+                            <li>Angles in Triangles</li>
+                            <li>Angles in Quadrilaterals</li>
+                            <li>Angles in a Circle</li>
+                            <li>Construction</li>
+                            <li>Loci</li>
+                            <li>Plans and Elevations</li>
+                        </ul>
+                    </div>
+                    <div class="subject-block subject-chemistry">
+                        <p class="subject-title">Chemistry (2 hours): C5 Energy Changes - Review Knowledge Organiser</p>
+                        <p class="font-medium text-sm mt-2 mb-1 text-gray-700">CognitoEdu Subtopics:</p>
+                        <a href="https://cognitoedu.org/lessons/c2-gcse-aqa-h-t/5.1-exothermic-endothermic-reactions" target="_blank" class="cognito-link">5.1 - Exothermic & Endothermic Reactions</a>
+                        <a href="https://cognitoedu.org/lessons/c2-gcse-aqa-h-t/5.2-bond-energies" target="_blank" class="cognito-link">5.2 - Bond Energies</a>
+                    </div>
+                    <div class="subject-block subject-biology">
+                        <p class="subject-title">Biology (2 hours): B1 Cell Biology - Catch-up / Mixed Practice (using booklet practice questions and relevant CognitoEdu subtopics)</p>
+                        <p class="font-medium text-sm mt-2 mb-1 text-gray-700">CognitoEdu Link for B1 Overview:</p>
+                        <a href="https://cognitoedu.org/course/b2-gcse-aqa-h-t" target="_blank" class="cognito-link">Cell Biology Overview</a> (Find Topic 1 on this page)
+                    </div>
+                    <div class="subject-block subject-physics">
+                        <p class="subject-title">Physics (2 hours): P4 Atomic Structure - Review Knowledge Organiser (booklet pages 90-116)</p>
+                        <p class="font-medium text-sm mt-2 mb-1 text-gray-700">CognitoEdu Subtopics:</p>
+                        <a href="https://cognitoedu.org/lessons/p2-gcse-aqa-h-t/4.1-the-atom" target="_blank" class="cognito-link">4.1 - The Atom</a>
+                        <a href="https://cognitoedu.org/lessons/p2-gcse-aqa-h-t/4.2-isotopes" target="_blank" class="cognito-link">4.2 - Isotopes</a>
+                        <a href="https://cognitoedu.org/lessons/p2-gcse-aqa-h-t/4.3-history-of-the-atom" target="_blank" class="cognito-link">4.3 - History of the Atom</a>
+                    </div>
+                </div>
+
+                <!-- Wednesday, June 18, 2025 -->
+                <div class="day-card">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-4 pb-2 border-b-2 border-blue-200">Wednesday, June 18, 2025</h2>
+                    <div class="subject-block subject-maths">
+                        <p class="subject-title">Maths (2 hours)</p>
+                        <ul class="activity-list">
+                            <li>Trigonometry</li>
+                            <li>Sine Rule</li>
+                            <li>Cosine Rule</li>
+                            <li>Area of a Triangle</li>
+                            <li>3D Trigonometry</li>
+                            <li>Pythagoras</li>
+                            <li>3D Pythagoras</li>
+                            <li>Transformations</li>
+                            <li>Reflections</li>
+                        </ul>
+                    </div>
+                    <div class="subject-block subject-chemistry">
+                        <p class="subject-title">Chemistry (2 hours): C5 Energy Changes - Practice Questions (Pages 121-129)</p>
+                        <p class="font-medium text-sm mt-2 mb-1 text-gray-700">CognitoEdu Subtopics:</p>
+                        <a href="https://cognitoedu.org/lessons/c2-gcse-aqa-h-t/5.3-cells-batteries" target="_blank" class="cognito-link">5.3 - Cells & Batteries</a>
+                        <a href="https://cognitoedu.org/lessons/c2-gcse-aqa-h-t/5.4-fuel-cells" target="_blank" class="cognito-link">5.4 - Fuel Cells</a>
+                    </div>
+                    <div class="subject-block subject-biology">
+                        <p class="subject-title">Biology (2 hours): B2 Organisation - Catch-up / Mixed Practice (using booklet practice questions and relevant CognitoEdu subtopics)</p>
+                        <p class="font-medium text-sm mt-2 mb-1 text-gray-700">CognitoEdu Link for B2 Overview:</p>
+                        <a href="https://cognitoedu.org/course/b2-gcse-aqa-h-t" target="_blank" class="cognito-link">Organisation Overview</a> (Find Topic 2 on this page)
+                    </div>
+                    <div class="subject-block subject-physics">
+                        <p class="subject-title">Physics (2 hours): P4 Atomic Structure - Review Knowledge Organiser (booklet pages 90-116)</p>
+                        <p class="font-medium text-sm mt-2 mb-1 text-gray-700">CognitoEdu Subtopics:</p>
+                        <a href="https://cognitoedu.org/lessons/p2-gcse-aqa-h-t/4.4-radioactive-decay" target="_blank" class="cognito-link">4.4 - Radioactive Decay</a>
+                        <a href="https://cognitoedu.org/lessons/p2-gcse-aqa-h-t/4.5-alpha-beta-gamma-radiation" target="_blank" class="cognito-link">4.5 - Alpha, Beta, Gamma Radiation</a>
+                    </div>
+                </div>
+
+                <!-- Thursday, June 19, 2025 -->
+                <div class="day-card">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-4 pb-2 border-b-2 border-blue-200">Thursday, June 19, 2025</h2>
+                    <div class="subject-block subject-maths">
+                        <p class="subject-title">Maths (2 hours)</p>
+                        <ul class="activity-list">
+                            <li>Rotations</li>
+                            <li>Translations</li>
+                            <li>Enlargements</li>
+                            <li>Combined Transformations</li>
+                            <li>Vectors (Column Vectors)</li>
+                            <li>Vectors (Magnitude)</li>
+                            <li>Vectors (Parallel Vectors)</li>
+                            <li>Vectors (Resultant Vectors)</li>
+                            <li>Vectors (Position Vectors)</li>
+                        </ul>
+                    </div>
+                    <div class="subject-block subject-chemistry">
+                        <p class="subject-title">Chemistry (2 hours): C5 Energy Changes - Practice Questions (Pages 130-137)</p>
+                        <p class="font-medium text-sm mt-2 mb-1 text-gray-700">Review of C5 topics and preparation for mixed practice</p>
+                    </div>
+                    <div class="subject-block subject-biology">
+                        <p class="subject-title">Biology (2 hours): B3 Infection & Response - Catch-up / Mixed Practice (using booklet practice questions and relevant CognitoEdu subtopics)</p>
+                        <p class="font-medium text-sm mt-2 mb-1 text-gray-700">CognitoEdu Link for B3 Overview:</p>
+                        <a href="https://cognitoedu.org/course/b2-gcse-aqa-h-t" target="_blank" class="cognito-link">Infection & Response Overview</a> (Find Topic 3 on this page)
+                    </div>
+                    <div class="subject-block subject-physics">
+                        <p class="subject-title">Physics (2 hours): P4 Atomic Structure - Practice Questions (booklet pages 92-105)</p>
+                        <p class="font-medium text-sm mt-2 mb-1 text-gray-700">CognitoEdu Subtopics:</p>
+                        <a href="https://cognitoedu.org/lessons/p2-gcse-aqa-h-t/4.6-half-life" target="_blank" class="cognito-link">4.6 - Half-Life</a>
+                        <a href="https://cognitoedu.org/lessons/p2-gcse-aqa-h-t/4.7-radiation-background-radiation" target="_blank" class="cognito-link">4.7 - Radiation & Background Radiation</a>
+                    </div>
+                </div>
+
+                <!-- Friday, June 20, 2025 -->
+                <div class="day-card">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-4 pb-2 border-b-2 border-blue-200">Friday, June 20, 2025</h2>
+                    <div class="subject-block subject-maths">
+                        <p class="subject-title">Maths (2 hours)</p>
+                        <ul class="activity-list">
+                            <li>Probability</li>
+                            <li>Relative Frequency</li>
+                            <li>Tree Diagrams</li>
+                            <li>Conditional Probability</li>
+                            <li>Venn Diagrams</li>
+                            <li>Frequency Tables</li>
+                            <li>Grouped Frequency Tables</li>
+                            <li>Bar Charts</li>
+                            <li>Pie Charts</li>
+                        </ul>
+                    </div>
+                    <div class="subject-block subject-chemistry">
+                        <p class="subject-title">Chemistry (2 hours): Catch-up / Mixed Practice for C1-C3 (using booklet practice questions and relevant CognitoEdu subtopics)</p>
+                        <p class="font-medium text-sm mt-2 mb-1 text-gray-700">CognitoEdu Link for All Chemistry Topics:</p>
+                        <a href="https://cognitoedu.org/course/c2-gcse-aqa-h-t" target="_blank" class="cognito-link">GCSE Chemistry AQA Higher Triple Course Overview</a>
+                    </div>
+                    <div class="subject-block subject-biology">
+                        <p class="subject-title">Biology (2 hours): B4 Bioenergetics - Catch-up / Mixed Practice (using booklet practice questions and relevant CognitoEdu subtopics)</p>
+                        <p class="font-medium text-sm mt-2 mb-1 text-gray-700">CognitoEdu Link for B4 Overview:</p>
+                        <a href="https://cognitoedu.org/course/b2-gcse-aqa-h-t" target="_blank" class="cognito-link">Bioenergetics Overview</a> (Find Topic 4 on this page)
+                    </div>
+                    <div class="subject-block subject-physics">
+                        <p class="subject-title">Physics (2 hours): P4 Atomic Structure - Practice Questions (booklet pages 106-117)</p>
+                        <p class="font-medium text-sm mt-2 mb-1 text-gray-700">CognitoEdu Subtopics:</p>
+                        <a href="https://cognitoedu.org/lessons/p2-gcse-aqa-h-t/4.8-irradiation-contamination" target="_blank" class="cognito-link">4.8 - Irradiation & Contamination</a>
+                        <a href="https://cognitoedu.org/lessons/p2-gcse-aqa-h-t/4.9-medical-uses-of-radiation" target="_blank" class="cognito-link">4.9 - Medical Uses of Radiation</a>
+                        <a href="https://cognitoedu.org/lessons/p2-gcse-aqa-h-t/4.10-nuclear-fission-ht-only" target="_blank" class="cognito-link">4.10 - Nuclear Fission (HT Only)</a>
+                        <a href="https://cognitoedu.org/lessons/p2-gcse-aqa-h-t/4.11-nuclear-fusion-ht-only" target="_blank" class="cognito-link">4.11 - Nuclear Fusion (HT Only)</a>
+                    </div>
+                </div>
+
+                <!-- Saturday, June 21, 2025 -->
+                <div class="day-card">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-4 pb-2 border-b-2 border-blue-200">Saturday, June 21, 2025</h2>
+                    <div class="subject-block subject-maths">
+                        <p class="subject-title">Maths (2 hours)</p>
+                        <ul class="activity-list">
+                            <li>Histograms</li>
+                            <li>Frequency Polygons</li>
+                            <li>Cumulative Frequency</li>
+                            <li>Box Plots</li>
+                            <li>Scatter Graphs</li>
+                            <li>Averages (Mean, Median, Mode)</li>
+                            <li>Range</li>
+                            <li>Interquartile Range</li>
+                            <li>Standard Deviation</li>
+                        </ul>
+                    </div>
+                    <div class="subject-block subject-chemistry">
+                        <p class="subject-title">Chemistry (2 hours): Catch-up / Mixed Practice for C4-C5 (using booklet practice questions and relevant CognitoEdu subtopics)</p>
+                        <p class="font-medium text-sm mt-2 mb-1 text-gray-700">CognitoEdu Link for All Chemistry Topics:</p>
+                        <a href="https://cognitoedu.org/course/c2-gcse-aqa-h-t" target="_blank" class="cognito-link">GCSE Chemistry AQA Higher Triple Course Overview</a>
+                    </div>
+                    <div class="subject-block subject-biology">
+                        <p class="subject-title">Biology (2 hours): Overall Biology Paper 1 Review (using your knowledge organisers, booklet, and all relevant CognitoEdu subtopics)</p>
+                        <p class="font-medium text-sm mt-2 mb-1 text-gray-700">CognitoEdu Link for All Biology Topics:</p>
+                        <a href="https://cognitoedu.org/course/b2-gcse-aqa-h-t" target="_blank" class="cognito-link">GCSE Biology AQA Higher Triple Course Overview</a>
+                    </div>
+                    <div class="subject-block subject-physics">
+                        <p class="subject-title">Physics (2 hours): Overall Physics Paper 1 Review (using your knowledge organisers, booklet, and all relevant CognitoEdu subtopics)</p>
+                        <p class="font-medium text-sm mt-2 mb-1 text-gray-700">CognitoEdu Link for All Physics Topics:</p>
+                        <a href="https://cognitoedu.org/course/p2-gcse-aqa-h-t" target="_blank" class="cognito-link">GCSE Physics AQA Higher Triple Course Overview</a>
+                    </div>
+                </div>
+
+                <!-- Sunday, June 22, 2025 -->
+                <div class="day-card">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-4 pb-2 border-b-2 border-blue-200">Sunday, June 22, 2025</h2>
+                    <div class="subject-block subject-maths">
+                        <p class="subject-title">Maths (2 hours)</p>
+                        <ul class="activity-list">
+                            <li>Sampling</li>
+                            <li>Stratified Sampling</li>
+                            <li>Capture-Recapture</li>
+                            <li>Time Series</li>
+                            <li>Correlation</li>
+                            <li>Line of Best Fit</li>
+                            <li>Misleading Graphs</li>
+                            <li>Questionnaires</li>
+                            <li>Data Collection</li>
+                        </ul>
+                    </div>
+                    <div class="subject-block subject-chemistry">
+                        <p class="subject-title">Chemistry (2 hours): Overall Chemistry Paper 1 Review (using your knowledge organisers, booklet, and all relevant CognitoEdu subtopics)</p>
+                        <p class="font-medium text-sm mt-2 mb-1 text-gray-700">CognitoEdu Link for All Chemistry Topics:</p>
+                        <a href="https://cognitoedu.org/course/c2-gcse-aqa-h-t" target="_blank" class="cognito-link">GCSE Chemistry AQA Higher Triple Course Overview</a>
+                    </div>
+                    <div class="subject-block subject-biology">
+                        <p class="subject-title">Biology (2 hours): Overall Biology Paper 1 Review (continued)</p>
+                        <p class="font-medium text-sm mt-2 mb-1 text-gray-700">CognitoEdu Link for All Biology Topics:</p>
+                        <a href="https://cognitoedu.org/course/b2-gcse-aqa-h-t" target="_blank" class="cognito-link">GCSE Biology AQA Higher Triple Course Overview</a>
+                    </div>
+                    <div class="subject-block subject-physics">
+                        <p class="subject-title">Physics (2 hours): Overall Physics Paper 1 Review (continued)</p>
+                        <p class="font-medium text-sm mt-2 mb-1 text-gray-700">CognitoEdu Link for All Physics Topics:</p>
+                        <a href="https://cognitoedu.org/course/p2-gcse-aqa-h-t" target="_blank" class="cognito-link">GCSE Physics AQA Higher Triple Course Overview</a>
+                    </div>
+                </div>
+
+                <!-- Monday, June 23, 2025 -->
+                <div class="day-card">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-4 pb-2 border-b-2 border-blue-200">Monday, June 23, 2025</h2>
+                    <div class="subject-block subject-maths">
+                        <p class="subject-title">Maths (2 hours): Final Maths Review / Exam Style Questions</p>
+                    </div>
+                    <div class="subject-block subject-chemistry">
+                        <p class="subject-title">Chemistry (2 hours): Final Chemistry Paper 1 Review / Exam Style Questions</p>
+                    </div>
+                    <div class="subject-block subject-biology">
+                        <p class="subject-title">Biology (2 hours): Final Biology Paper 1 Review / Exam Style Questions</p>
+                    </div>
+                    <div class="subject-block subject-physics">
+                        <p class="subject-title">Physics (2 hours): Final Physics Paper 1 Review / Exam Style Questions</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Geography Schedule Content -->
+        <div id="geography-schedule" class="tab-content hidden">
+            <p class="text-gray-700 text-center mb-10 text-lg">
+                Here's your focused Geography revision schedule from **June 10 to June 16, 2025**. This plan divides your practice questions into manageable daily chunks.
+            </p>
+
+            <div class="grid grid-cols-1 gap-8">
+                <!-- Tuesday, June 10, 2025 (Geography specific) -->
+                <div class="day-card">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-4 pb-2 border-b-2 border-green-300">Tuesday, June 10, 2025</h2>
+                    <div class="subject-block subject-geography">
+                        <p class="geography-subject-title">Tectonic Hazards (Booklet: "Tectonic Hazards.pdf")</p>
+                        <ul class="activity-list">
+                            <li>Question 1 (all parts): Structure of the Earth, Plate Boundaries, Volcanoes</li>
+                            <li>Question 2 (all parts): Earth's Layers, Tsunami, Impacts of Tectonic Hazards</li>
+                            <li>Question 3 (all parts): Plate Movement Causes, Impacts Comparison</li>
+                            <li>Question 4 (all parts): Iceland Location</li>
+                            <li>Question 5: Difference in Volcano Types</li>
+                            <li>Question 6: Primary and Secondary Impacts of Hazards</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Wednesday, June 11, 2025 (Geography specific) -->
+                <div class="day-card">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-4 pb-2 border-b-2 border-green-300">Wednesday, June 11, 2025</h2>
+                    <div class="subject-block subject-geography">
+                        <p class="geography-subject-title">Global Climate (Booklet: "Global climate.pdf")</p>
+                        <ul class="activity-list">
+                            <li>Question 1 (a i, ii, iii): Arctic Ice Trend, Reasons, Consequences for People</li>
+                            <li>Question 1 (b): Evidence of Natural Climate Change</li>
+                            <li>Question 1 (c): Greenhouse Gas Emissions (Figures 3, 4, 5 from booklet)</li>
+                            <li>Question 2 (a i, ii): Antarctic Temp and CO2 Trends, Natural Climate Change Cause</li>
+                            <li>Question 2 (b): Global Atmospheric Circulation & Rainfall</li>
+                            <li>Question 3 (a i, ii, iii): Arid Areas, Hadley Cell, Ocean Currents</li>
+                            <li>Question 4 (a i, ii): Timbuktu Climate Graph, Annual Temperature Range</li>
+                            <li>Question 4 (b): Reasons for Arid Areas</li>
+                            <li>Question 5 (all parts): Sea Level Rise Projections, Reasons for Range</li>
+                            <li>Question 6: Historical Records for Past Climate Change</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Thursday, June 12, 2025 (Geography specific) -->
+                <div class="day-card">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-4 pb-2 border-b-2 border-green-300">Thursday, June 12, 2025</h2>
+                    <div class="subject-block subject-geography">
+                        <p class="geography-subject-title">Extreme Weather (Booklet: "Extreme weather.pdf")</p>
+                        <ul class="activity-list">
+                            <li>Question 1 (a): Reasons Tropical Cyclones Lose Energy</li>
+                            <li>Question 1 (b): Vulnerability to Tropical Cyclones</li>
+                            <li>Question 2 (a): Saffir-Simpson Scale Data Source</li>
+                            <li>Question 2 (b) i: Haiti Vulnerability (Figure 3)</li>
+                            <li>Question 2 (b) ii: GIS Maps for Preparation (Figure 3)</li>
+                            <li>Question 2 (c): Response Methods in Developed Countries</li>
+                            <li>Question 3 (i, ii): Coastal Flooding Prediction, Preparation Skills</li>
+                            <li>Question 3 (iii, iv): Manhattan Flooding Vulnerability & Map Use</li>
+                            <li>Question 4 (a): Analyse Data for Two Tropical Cyclones (Figure 2)</li>
+                            <li>Question 4 (b): Social Media for Recording Impact</li>
+                            <li>Question 4 (c): Explain Economic Cost Variation</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Friday, June 13, 2025 (Geography specific) -->
+                <div class="day-card">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-4 pb-2 border-b-2 border-green-300">Friday, June 13, 2025</h2>
+                    <div class="subject-block subject-geography">
+                        <p class="geography-subject-title">Global Inequality (Part 1) (Booklet: "Global Inequality.pdf")</p>
+                        <ul class="activity-list">
+                            <li>Question 1 (a i, ii): Maternal Mortality, Economic Measure of Development</li>
+                            <li>Question 1 (b): Fertility Rates Fall as Countries Develop</li>
+                            <li>Question 1 (c i, ii): Rostow's Modernisation Theory (Figure 4)</li>
+                            <li>Question 1 (d): Advantage of Intermediate Technology</li>
+                            <li>Question 1 (e i, ii): Share of National Wealth (India & Zambia - Figure 5) - *Skip graph drawing for Q1 e i.*</li>
+                            <li>Question 1 (f i, ii): HDI Levels (Malaysia - Figure 6) - *No need to draw chart for Q1 f ii.*</li>
+                            <li>Question 1 (g): Economic Development and Water Pollution</li>
+                            <li>Question 2 (a i, ii): GDP Definition, HDI Components</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Saturday, June 14, 2025 (Geography specific) -->
+                <div class="day-card">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-4 pb-2 border-b-2 border-green-300">Saturday, June 14, 2025</h2>
+                    <div class="subject-block subject-geography">
+                        <p class="geography-subject-title">Global Inequality (Part 2) & Development of an Emerging Country (Start)</p>
+                        <ul class="activity-list">
+                            <li>**Global Inequality (from "Global Inequality.pdf")**</li>
+                            <li>Question 2 (b): How HDI Measures Health</li>
+                            <li>Question 2 (c): Topography and Economic Development</li>
+                            <li>Question 2 (d): Foreign Direct Investment (FDI - Figure 4)</li>
+                            <li>Question 2 (e): Disadvantage of Top-Down Development Strategies</li>
+                            <li>Question 2 (f i, iii): Rural/Urban Population Change (China - Figure 5) - *Skip Q2 f ii (data presentation technique).*</li>
+                            <li>Question 3 (a i, ii): Rostow's Stages (Secondary Sector), Colonialism</li>
+                            <li>Question 3 (b): Advantage of Top-Down Development Strategies</li>
+                            <li>Question 3 (c i): Air Transport Development (Figure 2a)</li>
+                            <li>Question 4 (a i, ii): Fertility Rates Definition, Measuring Economic Development</li>
+                            <li>Question 4 (b i): Political Corruption Map (Figure 5) - *Skip Q4 b ii & iii (disadvantages of choropleth, governance inequality).*</li>
+                            <li>Question 4 (c i, ii, iii): Population Pyramid (India - Figure 6a, 6b)</li>
+                            <li>Question 4 (d): Disadvantage of Intermediate Technology</li>
+                            <li>Question 4 (e): FDI Benefits for Emerging Country</li>
+                            <br>
+                            <li>**Development of an Emerging Country (Start) (Booklet: "Development of an emerging country.pdf")**</li>
+                            <li>Question 1: Role of Transnational Corporations (TNCs)</li>
+                            <li>Question 2 (a): Socio-economic Differences between Regions</li>
+                            <li>Question 2 (b): Impact of Globalisation on Economy</li>
+                            <li>Question 3 (a i, ii, iii): Fertility Rate in India (mean, population growth, demographic change)</li>
+                            <li>Question 3 (b) i: Turkey's GDP Contribution (Figure 2c) - *Skip Q3 b ii & iii (data presentation technique, outsourcing).*</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Sunday, June 15, 2025 (Geography specific) -->
+                <div class="day-card">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-4 pb-2 border-b-2 border-green-300">Sunday, June 15, 2025</h2>
+                    <div class="subject-block subject-geography">
+                        <p class="geography-subject-title">Development of an Emerging Country (Finish) & Megacity (Start)</p>
+                        <ul class="activity-list">
+                            <li>**Development of an Emerging Country (Finish) (from "Development of an emerging country.pdf")**</li>
+                            <li>Question 4: Development Influenced by Location</li>
+                            <li>Question 5: Negative Impacts of Rapid Economic Development on Age Groups</li>
+                            <li>Question 6: Economic Development and International Role</li>
+                            <br>
+                            <li>**Megacity (Start) (Booklet: "Megacity.pdf")**</li>
+                            <li>Question 1 (a): Megacity Location Influence on Growth</li>
+                            <li>Question 1 (b): Quality of Life Variation in Megacities</li>
+                            <li>Question 2 (a i, iii): Site and Situation Significance, Opportunities from Rapid Growth - *Skip Q2 a ii (building age).*</li>
+                            <li>Question 3: Characteristics of Bottom-up Development Strategies</li>
+                            <li>Question 4 (i, ii, iii): Delhi Case Study (Population Increase, Urban Land Use Growth, Rapid Growth Challenges - Figures 8a, 8b)</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Monday, June 16, 2025 (Geography specific) -->
+                <div class="day-card">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-4 pb-2 border-b-2 border-green-300">Monday, June 16, 2025</h2>
+                    <div class="subject-block subject-geography">
+                        <p class="geography-subject-title">Megacity (Finish) & Rapid Urban Change (Start)</p>
+                        <ul class="activity-list">
+                            <li>**Megacity (Finish) (from "Megacity.pdf")**</li>
+                            <li>Question 5: Success of Top-Down Development Strategies</li>
+                            <br>
+                            <li>**Rapid Urban Change (Start) (Booklet: "Rapid Urban change.pdf")**</li>
+                            <li>Question 1 (a i, ii): Urban Primacy Definition, Megacity Definition</li>
+                            <li>Question 1 (b i, ii): Urban Populations of African Countries (Figure 7)</li>
+                            <li>Question 1 (c i, iii): Employment Types (Figure 8) - *Skip Q1 c ii (formal sector difference calculation).*</li>
+                            <li>Question 1 (d i, iii): Detroit Case Study (Land Use, Hudson's Redevelopment Site - Figure 9) - *Skip Q1 d ii (sports facilities distribution).*</li>
+                            <li>Question 2 (a): Urbanisation Definition</li>
+                            <li>Question 2 (b i, ii): Informal Employment Characteristic, Reason for Growth</li>
+                            <li>Question 2 (c i): Sunderland Land Use (Figure 6) - *Skip Q2 c ii, iii (Sunderland CBD location, IAMP site factors).*</li>
+                            <li class="font-bold text-red-700">Questions 4, 5, 6 from "Rapid Urban change.pdf" are *omitted* due to time constraints to meet the June 16 deadline.</li>
+                        </ul>
+                    </div>
+                </div>
             </div>
 
-            <div class="bg-white rounded-lg shadow-md p-6 border-t-4 border-[#4286f4]">
-                <h3 class="text-2xl font-bold text-[#004e92] mb-4">Protease: Breaking Down Proteins</h3>
-                <p class="text-gray-700 mb-4">
-                    Proteases are enzymes that specialise in breaking down proteins. These large molecules are digested into their smaller building blocks, amino acids, which are then ready for absorption. Examples include pepsin and trypsin.
-                </p>
-                <div class="bg-[#EBF5FF] p-4 rounded-lg text-center mb-4">
-                    <p class="font-bold text-lg text-[#004e92]">Proteins <span class="text-2xl">⟶</span> Amino Acids</p>
-                </div>
-                <h4 class="font-semibold text-xl text-[#004e92] mb-2">Where it's Found:</h4>
-                <ul class="list-disc list-inside text-gray-700">
-                    <li>Stomach (as pepsin)</li>
-                    <li>Pancreas</li>
-                    <li>Small intestine wall</li>
-                </ul>
+            <div class="note">
+                <p><strong>Important Note:</strong> This schedule is highly condensed to fit within the specified timeframe. Some questions, particularly those requiring calculations, complex data interpretation, or extensive written responses that overlap with other questions, have been omitted to ensure broader topic coverage by June 16th. Please refer to the specific notes within each day's entry for omitted questions.</p>
             </div>
-        </section>
-
-        <div class="section-separator"></div>
-
-        <section class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
-            <div class="bg-white rounded-lg shadow-md p-6 border-t-4 border-[#4286f4] md:col-span-1 md:col-start-1">
-                <h3 class="text-2xl font-bold text-[#004e92] mb-4">Lipase: Breaking Down Lipids</h3>
-                <p class="text-gray-700 mb-4">
-                    Lipase is the enzyme responsible for the digestion of lipids (fats and oils). It breaks these large molecules down into fatty acids and glycerol, which are both small enough to be absorbed into the bloodstream.
-                </p>
-                <div class="bg-[#EBF5FF] p-4 rounded-lg text-center mb-4">
-                    <p class="font-bold text-lg text-[#004e92]">Lipids <span class="text-2xl">⟶</span> Fatty Acids + Glycerol</p>
-                </div>
-                <h4 class="font-semibold text-xl text-[#004e92] mb-2">Where it's Found:</h4>
-                <ul class="list-disc list-inside text-gray-700">
-                    <li>Pancreas</li>
-                    <li>Small intestine wall</li>
-                </ul>
-            </div>
-
-            <div class="bg-white rounded-lg shadow-md p-6 border-t-4 border-[#4286f4] md:col-span-1">
-                <h3 class="text-2xl font-bold text-[#004e92] mb-4">Summary of Digestion</h3>
-                <p class="text-gray-700 leading-relaxed mb-4">
-                    These three types of enzymes – carbohydrases (like amylase), proteases, and lipases – work together in different parts of the digestive system to ensure that all major food groups are broken down into absorbable forms. This process is essential for providing the body with the energy and building blocks it needed. Remember, enzymes are biological catalysts, specific to their substrates, and function best under optimum conditions.
-                </p>
-                <div class="bg-[#A3D5FF] p-4 rounded-lg text-center">
-                    <p class="font-bold text-lg text-[#004e92]">Key Takeaway:</p>
-                    <p class="text-[#004e92]">Enzymes are essential for efficient chemical digestion throughout the body.</p>
-                </div>
-            </div>
-        </section>
-
-        <footer class="text-center mt-12 py-6 border-t border-gray-200">
-            <p class="text-gray-500">Tailored for AQA GCSE Biology (9-1) specification.</p>
-        </footer>
-    </section>
-
+        </div>
+    </div>
 
     <script>
-        // Chart.js initialization function (remains the same)
-        function initializeChart() {
-            const ctx = document.getElementById('reducingSugarsChart').getContext('2d');
-            // Destroy existing chart if it exists to prevent re-initialization errors
-            if (window.reducingSugarsChartInstance) {
-                window.reducingSugarsChartInstance.destroy();
+        function openTab(evt, tabName) {
+            var i, tabcontent, tablinks;
+            tabcontent = document.getElementsByClassName("tab-content");
+            for (i = 0; i < tabcontent.length; i++) {
+                tabcontent[i].style.display = "none";
             }
-            window.reducingSugarsChartInstance = new Chart(ctx, {
-                type: 'bar',
-                data: {
-                    labels: ['Negative', 'Trace', 'Low', 'Moderate', 'High'],
-                    datasets: [{
-                        label: 'Concentration of Reducing Sugar',
-                        data: [1, 2, 3, 4, 5],
-                        backgroundColor: [
-                            '#4286f4', /* Blue (original Benedict's color) */
-                            '#2E8B57', /* Green */
-                            '#FFD700', /* Yellow */
-                            '#FFA500', /* Orange */
-                            '#B22222'  /* Brick-red */
-                        ],
-                        borderColor: 'rgba(255, 255, 255, 0)',
-                        borderWidth: 1
-                    }]
-                },
-                options: {
-                    indexAxis: 'y',
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    scales: {
-                        x: {
-                            beginAtZero: true,
-                            ticks: {
-                                display: false
-                            },
-                            grid: {
-                                display: false
-                            },
-                            title: {
-                               display: true,
-                               text: 'Relative Concentration →'
-                            }
-                        },
-                        y: {
-                           grid: {
-                                display: false
-                            }
-                        }
-                    },
-                    plugins: {
-                        legend: {
-                            display: false
-                        },
-                        tooltip: {
-                            callbacks: {
-                                title: function(tooltipItems) {
-                                    const item = tooltipItems[0];
-                                    let label = item.chart.data.labels[item.dataIndex];
-                                    if (Array.isArray(label)) {
-                                      return label.join(' ');
-                                    } else {
-                                      return label;
-                                    }
-                                },
-                                label: function(context) {
-                                    let label = context.dataset.label || '';
-                                    if (label) {
-                                        label += ': ';
-                                    }
-                                    const value = context.parsed.x;
-                                    const textLabel = context.chart.data.labels[context.dataIndex];
-                                    if(textLabel === 'Negative') return ' No reducing sugar present (remains blue)';
-                                    if(textLabel === 'Trace') return ' Trace amount: Green precipitate';
-                                    if(textLabel === 'Low') return ' Low amount: Yellow precipitate';
-                                    if(textLabel === 'Moderate') return ' Moderate amount: Orange precipitate';
-                                    if(textLabel === 'High') return ' High amount: Brick-red precipitate';
-                                    return label;
-                                }
-                            }
-                        }
-                    }
-                }
-            });
+            tablinks = document.getElementsByClassName("tab-button");
+            for (i = 0; i < tablinks.length; i++) {
+                tablinks[i].className = tablinks[i].className.replace(" active", "");
+            }
+            document.getElementById(tabName).style.display = "block";
+            evt.currentTarget.className += " active";
         }
 
-
-        // Function to hide all content sections
-        function hideAllSections() {
-            document.querySelectorAll('section').forEach(section => {
-                // Ensure we only hide actual content sections, not the main header area
-                if (section.id && ['revision-timetable', 'food-tests-infographic', 'enzymes-infographic'].includes(section.id)) {
-                    section.classList.add('hidden');
-                }
-            });
-        }
-
-        // Dropdown menu functionality
-        document.getElementById('menuButton').addEventListener('click', function() {
-            const dropdownMenu = document.getElementById('dropdownMenu');
-            dropdownMenu.classList.toggle('hidden');
-        });
-
-        // Close the dropdown if the user clicks outside of it
-        window.addEventListener('click', function(event) {
-            const menuButton = document.getElementById('menuButton');
-            const dropdownMenu = document.getElementById('dropdownMenu');
-            if (!menuButton.contains(event.target) && !dropdownMenu.contains(event.target)) {
-                dropdownMenu.classList.add('hidden');
-            }
-        });
-
-        // Handle menu item clicks
-        document.querySelectorAll('#dropdownMenu a').forEach(anchor => {
-            anchor.addEventListener('click', function (e) {
-                e.preventDefault();
-
-                const targetSectionId = this.getAttribute('data-target-section');
-                
-                hideAllSections(); // Hide all sections first
-
-                const targetSection = document.getElementById(targetSectionId);
-                if (targetSection) {
-                    targetSection.classList.remove('hidden'); // Show the target section
-
-                    // Scroll to the top of the displayed section
-                    targetSection.scrollIntoView({
-                        behavior: 'smooth'
-                    });
-
-                    // If the food tests infographic is shown, re-initialize the chart
-                    // This is important because Chart.js needs its canvas element to be visible
-                    // when it's initialized to correctly calculate dimensions.
-                    if (targetSectionId === 'food-tests-infographic') {
-                        initializeChart();
-                    }
-                }
-                
-                // Hide dropdown after clicking a link
-                document.getElementById('dropdownMenu').classList.add('hidden');
-            });
-        });
-
-        // Initial state: hide all sections on page load
-        document.addEventListener('DOMContentLoaded', () => {
-            hideAllSections();
-            // Optionally, show one section by default, e.g., the revision timetable
-            // document.getElementById('revision-timetable').classList.remove('hidden');
-            // If you want to show a specific one on load, and initialize its chart if applicable:
-            // document.getElementById('food-tests-infographic').classList.remove('hidden');
-            // initializeChart();
+        // Set the default tab to open on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('all-subjects-schedule').style.display = 'block';
+            document.querySelector('.tab-button').classList.add('active');
         });
     </script>
+
 </body>
 </html>
